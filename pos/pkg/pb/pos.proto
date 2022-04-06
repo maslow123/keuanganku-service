@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package pos;
+
+option go_package = "./pkg/pb";
+
+message Pos {
+  int64 id = 1;
+  string name = 2;
+  int32 type = 3;
+  int64 total = 4;
+  string color = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+}
+
+// CreatePos
+message CreatePosRequest {
+  int64 user_id = 1;
+  string name = 2;
+  int32 type = 3;
+  string color = 4;
+}
+
+message CreatePosResponse {
+  int64 status = 1;
+  string error = 2;
+  int64 id = 3;
+}
+
+message PosDetailRequest { int64 id = 1; }
+
+message PosDetailResponse {
+  int64 status = 1;
+  string error = 2;
+  Pos pos = 3;
+}
+
+message GetPosListRequest {
+  int64 limit = 1;
+  int64 page = 2;
+  int64 user_id = 3;
+}
+
+message GetPosListResponse {
+  int64 status = 1;
+  string error = 2;
+  int64 limit = 3;
+  int64 page = 4;
+  repeated Pos pos = 5;
+}
+
+message UpdatePosRequest {
+  int64 id = 1;
+  string name = 2;
+  string color = 3;
+}
+
+message UpdatePosResponse {
+  int64 status = 1;
+  string error = 2;
+  Pos pos = 3;
+}
+
+message DeletePosRequest {
+  int64 id = 1;
+}
+
+message DeletePosResponse {
+  int64 status = 1;
+  string error = 2;
+}
+
+service PosService {
+  rpc CreatePos(CreatePosRequest) returns (CreatePosResponse) {}
+  rpc GetPosByUser(GetPosListRequest) returns (GetPosListResponse) {}
+  rpc PosDetail(PosDetailRequest) returns (PosDetailResponse) {}
+  rpc UpdatePosByUser(UpdatePosRequest) returns (UpdatePosResponse) {}
+  rpc DeletePosByUser(DeletePosRequest) returns (DeletePosResponse) {}
+}

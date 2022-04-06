@@ -1,0 +1,15 @@
+version: '3'
+services:
+  api:
+    image: maslow123/products:latest
+    container_name: api
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - ${PORT}:${PORT}
+    restart: on-failure
+    volumes:
+      - api:/usr/src/app/    
+volumes:
+  api:
