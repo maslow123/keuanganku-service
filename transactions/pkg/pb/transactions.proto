@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package transactions;
+option go_package = "./pkg/pb";
+
+import "pb/pos.proto";
+
+
+message Transaction {
+  int64 id = 1;
+  string user_id = 2;
+  int32 pos_id = 3;
+  int64 total = 4;
+  string details = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+  pos.Pos pos = 8;
+}
+
+// CreateTransaction
+message CreateTransactionRequest {
+  int64 user_id = 1;
+  int64 pos_id = 2;
+  int64 total = 3;
+  string details = 4;
+}
+
+message CreateTransactionResponse {
+  int64 status = 1;
+  string error = 2;
+  int64 id = 3;
+}
+
+// message TransactionDetailRequest { int64 id = 1; }
+
+// message TransactionDetailResponse {
+//   int64 status = 1;
+//   string error = 2;
+//   Transaction Transaction = 3;
+// }
+
+message GetTransactionListRequest {
+  int64 limit = 1;
+  int64 page = 2;
+  int64 user_id = 3;
+}
+
+message GetTransactionListResponse {
+  int64 status = 1;
+  string error = 2;
+  int64 limit = 3;
+  int64 page = 4;
+  repeated Transaction Transaction = 5;
+}
+
+service TransactionService {
+  rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse) {}
+  rpc GetTransactionByUser(GetTransactionListRequest) returns (GetTransactionListResponse) {}
+  // rpc TransactionDetail(TransactionDetailRequest) returns (TransactionDetailResponse) {}
+}

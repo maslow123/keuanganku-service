@@ -36,3 +36,10 @@ func genericDeletePosByUserResponse(statusCode int, errorMessage string) (*pb.De
 		Error:  errorMessage,
 	}, nil
 }
+
+func genericUpdateTotalPosByUserResponse(statusCode int, errorMessage string) (*pb.UpdateTotalPosResponse, error) {
+	return &pb.UpdateTotalPosResponse{
+		Status: int64(statusCode),
+		Error:  errorMessage,
+	}, nil
+}

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -239,4 +240,54 @@ func (s *Server) DeletePosByUser(ctx context.Context, req *pb.DeletePosRequest) 
 	}
 
 	return genericDeletePosByUserResponse(http.StatusOK, "")
+}
+
+func (s *Server) UpdateTotalPosByUser(ctx context.Context, req *pb.UpdateTotalPosRequest) (*pb.UpdateTotalPosResponse, error) {
+	if req.Id == 0 {
+		return genericUpdateTotalPosByUserResponse(http.StatusBadRequest, "invalid-id")
+	}
+
+	if req.Action != pb.UpdateTotalPosRequest_INCREASE && req.Action != pb.UpdateTotalPosRequest_DECREASE {
+		return genericUpdateTotalPosByUserResponse(http.StatusBadRequest, "invalid-action")
+	}
+
+	if req.Amount == 0 {
+		return genericUpdateTotalPosByUserResponse(http.StatusBadRequest, "invalid-amount")
+	}
+
+	q := `
+		UPDATE pos 
+		SET total = 	
+	`
+	if req.Action == pb.UpdateTotalPosRequest_INCREASE {
+		q = fmt.Sprintf("%s total + %d", q, req.Amount)
+	}
+	if req.Action == pb.UpdateTotalPosRequest_DECREASE {
+		q = fmt.Sprintf("%s total - %d", q, req.Amount)
+	}
+
+	q = fmt.Sprintf("%s WHERE id = $1 RETURNING total", q)
+	row := s.DB.QueryRowContext(ctx, q,
+		&req.Id,
+	)
+
+	var total int64
+	err := row.Scan(&total)
+	if err != nil {
+		log.Println(err)
+		if err != nil {
+			log.Println(err)
+			if err == sql.ErrNoRows {
+				return genericUpdateTotalPosByUserResponse(http.StatusNotFound, "pos-not-found")
+			}
+			return genericUpdateTotalPosByUserResponse(http.StatusInternalServerError, err.Error())
+		}
+	}
+	resp := &pb.UpdateTotalPosResponse{
+		Status: http.StatusOK,
+		Error:  "",
+		Total:  total,
+	}
+
+	return resp, nil
 }

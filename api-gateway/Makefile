@@ -1,0 +1,15 @@
+proto:
+	protoc --proto_path=pkg pkg/**/pb/*.proto --go_out=plugins=grpc:.
+	protoc --proto_path=pkg pkg/transactions/pb/*.proto --go_out=plugins=grpc:.
+
+buildapigateway:
+	docker-compose build --no-cache api-gateway
+
+runapigateway: buildapigateway
+	docker-compose up -d api-gateway
+
+server:
+	go test -v ./... -coverprofile cover.out
+
+test:
+	go test -v ./... -coverprofile cover.out

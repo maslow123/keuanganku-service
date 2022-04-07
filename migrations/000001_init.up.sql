@@ -29,9 +29,9 @@ CREATE TABLE "transactions" (
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-ALTER TABLE "transactions" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-ALTER TABLE "transactions" ADD FOREIGN KEY ("pos_id") REFERENCES "pos" ("id");
-ALTER TABLE "pos" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
+ALTER TABLE "transactions" ADD FOREIGN KEY ("pos_id") REFERENCES "pos" ("id") ON DELETE CASCADE;
+ALTER TABLE "pos" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
 
 CREATE INDEX ON "transactions" ("user_id", "pos_id");
 CREATE INDEX ON "pos" ("user_id");

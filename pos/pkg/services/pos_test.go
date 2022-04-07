@@ -425,3 +425,137 @@ func TestDeletePos(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateTotalPos(t *testing.T) {
+	var lastInsertedId int64
+	testCases := []struct {
+		name     string
+		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64
+		action   pb.UpdateTotalPosRequest_ActionTransaction
+		amount   int64
+		resp     *pb.UpdateTotalPosResponse
+	}{
+		{
+			"OK Increment",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+				arg := &pb.CreatePosRequest{
+					UserId: 1,
+					Name:   utils.RandomString(10),
+					Type:   0,
+					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
+				}
+				todo, err := client.CreatePos(ctx, arg)
+				require.NoError(t, err)
+
+				lastInsertedId = todo.Id
+				return todo.Id
+
+			},
+			pb.UpdateTotalPosRequest_INCREASE,
+			5000,
+			&pb.UpdateTotalPosResponse{
+				Status: int64(http.StatusOK),
+				Error:  "",
+				Total:  5000,
+			},
+		},
+		{
+			"OK Decrement",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+				return lastInsertedId
+
+			},
+			pb.UpdateTotalPosRequest_DECREASE,
+			5000,
+			&pb.UpdateTotalPosResponse{
+				Status: int64(http.StatusOK),
+				Error:  "",
+				Total:  0,
+			},
+		},
+		{
+			"Invalid ID",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+				return 0
+
+			},
+			pb.UpdateTotalPosRequest_INCREASE,
+			5000,
+			&pb.UpdateTotalPosResponse{
+				Status: int64(http.StatusBadRequest),
+				Error:  "invalid-id",
+				Total:  0,
+			},
+		},
+		{
+			"Invalid Action",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+				return lastInsertedId
+
+			},
+			3,
+			5000,
+			&pb.UpdateTotalPosResponse{
+				Status: int64(http.StatusBadRequest),
+				Error:  "invalid-action",
+				Total:  0,
+			},
+		},
+		{
+			"Invalid Amount",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+				return lastInsertedId
+
+			},
+			pb.UpdateTotalPosRequest_INCREASE,
+			0,
+			&pb.UpdateTotalPosResponse{
+				Status: int64(http.StatusBadRequest),
+				Error:  "invalid-amount",
+				Total:  0,
+			},
+		},
+		{
+			"Pos Not Found",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+				return 99999
+
+			},
+			pb.UpdateTotalPosRequest_INCREASE,
+			5000,
+			&pb.UpdateTotalPosResponse{
+				Status: int64(http.StatusNotFound),
+				Error:  "pos-not-found",
+				Total:  0,
+			},
+		},
+	}
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewPosServiceClient(conn)
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			posId := tc.getPosID(t, ctx, client)
+
+			req := &pb.UpdateTotalPosRequest{
+				Action: tc.action,
+				Amount: tc.amount,
+				Id:     posId,
+			}
+
+			response, err := client.UpdateTotalPosByUser(ctx, req)
+			require.NoError(t, err)
+
+			require.Equal(t, tc.resp.Status, response.Status)
+			require.Equal(t, tc.resp.Error, response.Error)
+			if response.Status == int64(http.StatusOK) {
+				require.Equal(t, tc.resp.Total, response.Total)
+			}
+		})
+	}
+}

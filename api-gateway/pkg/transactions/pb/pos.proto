@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pos;
 
-option go_package = "./pkg/pb";
+option go_package = "./pkg/transactions/pb";
 
 message Pos {
   int64 id = 1;
