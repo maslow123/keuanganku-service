@@ -1,8 +1,8 @@
 version: '3'
 services:  
-  api:
-    image: maslow123/keuanganku-service:latest
-    container_name: api
+  userapi:
+    image: maslow123/keuanganku-users:latest
+    container_name: userapi
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -42,7 +42,7 @@ services:
     networks:
       - keuanganku
   api-gateway:
-    image: maslow123/api-gateway:latest
+    image: maslow123/keuanganku-apigateway:latest
     container_name: api-gateway
     build:
       context: .

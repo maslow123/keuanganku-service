@@ -7,12 +7,15 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine, c *config.Config) *ServiceClient {
+
 	svc := &ServiceClient{
 		Client: InitServiceClient(c),
 		Router: r,
 	}
+	a := InitAuthMiddleware(svc)
 
 	routes := r.Group("/users")
+	routes.Use(a.CORSMiddleware)
 	routes.POST("/register", svc.Register)
 	routes.POST("/login", svc.Login)
 

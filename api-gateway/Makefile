@@ -3,7 +3,7 @@ proto:
 	protoc --proto_path=pkg pkg/transactions/pb/*.proto --go_out=plugins=grpc:.
 
 buildapigateway:
-	docker-compose build --no-cache api-gateway
+	docker-compose build api-gateway
 
 runapigateway: buildapigateway
 	docker-compose up -d api-gateway

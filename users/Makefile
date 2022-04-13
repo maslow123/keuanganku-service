@@ -2,7 +2,7 @@ proto:
 	protoc pkg/pb/*.proto --go_out=plugins=grpc:.
 
 buildapi:
-	docker-compose build --no-cache api
+	docker-compose build api
 
 runapi: buildapi
 	docker-compose up -d api

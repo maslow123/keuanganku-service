@@ -1,7 +1,7 @@
 version: '3'
 services:
   api:
-    image: maslow123/keuanganku:latest
+    image: maslow123/keuanganku-users:latest
     container_name: api
     build:
       context: .
@@ -14,5 +14,5 @@ services:
 volumes:
   api:
 networks:
-  ecommerce:
+  keuanganku:
     driver: bridge
