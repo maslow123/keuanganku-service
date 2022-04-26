@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/maslow123/api-gateway/pkg/config"
-	"github.com/maslow123/api-gateway/pkg/pos/pb"
+	"github.com/maslow123/api-gateway/pkg/transactions/pb"
 	"google.golang.org/grpc"
 )
 

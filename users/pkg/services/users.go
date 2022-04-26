@@ -101,7 +101,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 		return genericLoginResponse(http.StatusUnauthorized, "password-not-match")
 	}
 
-	token, _ := s.Jwt.GenerateToken(req.Email)
+	token, _ := s.Jwt.GenerateToken(user.Id)
 	resp := &pb.LoginResponse{
 		Status: http.StatusOK,
 		Error:  "",
@@ -124,6 +124,6 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 
 	return &pb.ValidateResponse{
 		Status: http.StatusOK,
-		Email:  claims.Email,
+		UserId: claims.UserId,
 	}, nil
 }

@@ -14,7 +14,7 @@ func RegisterRoutes(r *gin.Engine, c *config.Config, userSvc *users.ServiceClien
 		Client: InitServiceClient(c),
 		Router: r,
 	}
-
+	r.Use(a.CORSMiddleware)
 	routes := r.Group("/pos")
 	routes.Use(a.AuthRequired)
 	routes.POST("/create", svc.CreatePos)

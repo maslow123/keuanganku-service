@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +26,6 @@ func Login(ctx *gin.Context, c pb.UserServiceClient) {
 		Password: req.Password,
 	})
 
-	log.Println(res)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
 		return

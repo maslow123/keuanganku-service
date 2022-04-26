@@ -6,20 +6,15 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maslow123/api-gateway/pkg/pos/pb"
+	"github.com/maslow123/api-gateway/pkg/transactions/pb"
 	"github.com/maslow123/api-gateway/pkg/utils"
 )
 
 func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
-	userIDString := ctx.Query("user_id")
+
 	limitString := ctx.Query("limit")
 	pageString := ctx.Query("page")
-
-	userID, err := strconv.Atoi(userIDString)
-	if err != nil {
-		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
-		return
-	}
+	userID := ctx.Value("user_id").(int64)
 
 	limit, err := strconv.Atoi(limitString)
 	if err != nil {
@@ -34,7 +29,7 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 	}
 
 	res, err := c.GetPosByUser(context.Background(), &pb.GetPosListRequest{
-		UserId: int64(userID),
+		UserId: userID,
 		Limit:  int64(limit),
 		Page:   int64(page),
 	})
@@ -44,10 +39,9 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
-	if res.Status != int64(http.StatusCreated) {
+	if res.Status != int64(http.StatusOK) {
 		ctx.JSON(int(res.Status), res.Error)
 		return
 	}
-
-	ctx.JSON(int(res.Status), &res)
+	utils.SendProtoMessage(ctx, res)
 }

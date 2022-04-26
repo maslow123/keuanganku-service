@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maslow123/api-gateway/pkg/pos/pb"
+	"github.com/maslow123/api-gateway/pkg/transactions/pb"
 	"github.com/maslow123/api-gateway/pkg/utils"
 	"github.com/stretchr/testify/require"
 )
@@ -264,7 +264,6 @@ func TestUpdatePos(t *testing.T) {
 				"color": "#FF00FF",
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				log.Println(recorder.Body)
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
@@ -347,7 +346,6 @@ func TestDeletePos(t *testing.T) {
 				return 9999
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				log.Println(recorder.Body)
 				require.Equal(t, http.StatusNotFound, recorder.Code)
 			},
 		},

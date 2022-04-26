@@ -8,7 +8,7 @@ message Pos {
   int64 id = 1;
   string name = 2;
   int32 type = 3;
-  int64 total = 4;
+  int32 total = 4;
   string color = 5;
   int64 created_at = 6;
   int64 updated_at = 7;

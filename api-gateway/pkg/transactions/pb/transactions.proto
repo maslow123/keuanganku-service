@@ -3,7 +3,7 @@ syntax = "proto3";
 package transactions;
 option go_package = "./pkg/transactions/pb";
 
-import "transactions/pb/pos.proto";
+// import "transactions/pb/pos.proto";
 
 
 message Transaction {

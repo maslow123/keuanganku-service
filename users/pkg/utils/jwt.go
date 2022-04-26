@@ -15,13 +15,13 @@ type JwtWrapper struct {
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	Id    int64
-	Email string
+	Id     int64
+	UserId int64
 }
 
-func (w *JwtWrapper) GenerateToken(user string) (signedToken string, err error) {
+func (w *JwtWrapper) GenerateToken(userId int64) (signedToken string, err error) {
 	claims := &jwtClaims{
-		Email: user,
+		UserId: userId,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(w.ExpirationHours)).Unix(),
 			Issuer:    w.Issuer,

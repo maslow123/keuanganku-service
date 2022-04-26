@@ -122,6 +122,7 @@ func (s *Server) GetPosByUser(ctx context.Context, req *pb.GetPosListRequest) (*
 		Page:   req.Page,
 		Pos:    pos,
 	}
+
 	return resp, nil
 }
 

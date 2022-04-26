@@ -43,18 +43,18 @@ func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, res.Error)
 			return
 		}
+
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, utils.ErrorResponse(err))
 		return
 	}
 
-	ctx.Set("email", res.Email)
+	ctx.Set("user_id", res.UserId)
 
 	ctx.Next()
 }
 
 func (c *AuthMiddlewareConfig) CORSMiddleware(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-	ctx.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
 

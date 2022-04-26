@@ -1,5 +1,10 @@
 proto:
-	protoc pkg/pb/*.proto --go_out=plugins=grpc:.
+	# protoc pkg/pb/*.proto --go_out=plugins=grpc:.
+	protoc \
+		-I D:/me/exercise/go/pkg/mod/github.com/gogo/protobuf@v1.3.2 \
+		-I D:/me/exercise/go/pkg/mod/github.com/gogo/protobuf@v1.3.2/gogoproto \
+		-I. --go_out=plugins=grpc:. pkg/pb/*.proto
+		
 
 buildapi:
 	docker-compose build --no-cache api

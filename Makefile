@@ -3,7 +3,7 @@ pull_api:
 	docker pull maslow123/keuanganku-users
 	docker pull maslow123/keuanganku-apigateway
 
-infratest: pull_api
+infratest: 
 	docker-compose up -d --force-recreate testdb
 	echo Starting for db...
 	# sleep 15

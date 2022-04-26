@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maslow123/api-gateway/pkg/pos/pb"
+	"github.com/maslow123/api-gateway/pkg/transactions/pb"
 	"github.com/maslow123/api-gateway/pkg/utils"
 )
 

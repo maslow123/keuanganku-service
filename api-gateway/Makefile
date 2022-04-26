@@ -9,7 +9,7 @@ runapigateway: buildapigateway
 	docker-compose up -d api-gateway
 
 server:
-	go test -v ./... -coverprofile cover.out
+	go run cmd/main.go
 
 test:
 	go test -v ./... -coverprofile cover.out
