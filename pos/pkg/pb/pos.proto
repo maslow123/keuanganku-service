@@ -38,16 +38,17 @@ message PosDetailResponse {
 }
 
 message GetPosListRequest {
-  int64 limit = 1;
-  int64 page = 2;
+  int32 limit = 1;
+  int32 page = 2;
   int64 user_id = 3;
+  int32 type = 4;
 }
 
 message GetPosListResponse {
-  int64 status = 1[(gogoproto.jsontag) = "status"];
+  int32 status = 1[(gogoproto.jsontag) = "status"];
   string error = 2 [(gogoproto.jsontag) = "error"];
-  int64 limit = 3 [(gogoproto.jsontag) = "limit"];
-  int64 page = 4 [(gogoproto.jsontag) = "page"];
+  int32 page = 4 [(gogoproto.jsontag) = "page"];
+  int32 limit = 3 [(gogoproto.jsontag) = "limit"];
   repeated Pos pos = 5 [(gogoproto.jsontag) = "pos"];
 }
 

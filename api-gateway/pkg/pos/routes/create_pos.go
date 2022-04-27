@@ -10,10 +10,9 @@ import (
 )
 
 type CreatePosRequest struct {
-	UserId int64  `json:"user_id"`
-	Name   string `json:"name"`
-	Type   int32  `json:"type"`
-	Color  string `json:"color"`
+	Name  string `json:"name"`
+	Type  int32  `json:"type"`
+	Color string `json:"color"`
 }
 
 func CreatePos(ctx *gin.Context, c pb.PosServiceClient) {
@@ -24,8 +23,10 @@ func CreatePos(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
+	userID := ctx.Value("user_id").(int64)
+
 	res, err := c.CreatePos(context.Background(), &pb.CreatePosRequest{
-		UserId: req.UserId,
+		UserId: userID,
 		Name:   req.Name,
 		Type:   req.Type,
 		Color:  req.Color,
@@ -36,7 +37,7 @@ func CreatePos(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 	if res.Status != int64(http.StatusCreated) {
-		ctx.JSON(int(res.Status), res.Error)
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 

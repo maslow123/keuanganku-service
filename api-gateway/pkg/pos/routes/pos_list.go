@@ -14,6 +14,7 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 
 	limitString := ctx.Query("limit")
 	pageString := ctx.Query("page")
+	typeString := ctx.Query("type")
 	userID := ctx.Value("user_id").(int64)
 
 	limit, err := strconv.Atoi(limitString)
@@ -28,10 +29,17 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
+	parsingType, err := strconv.Atoi(typeString)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
+		return
+	}
+
 	res, err := c.GetPosByUser(context.Background(), &pb.GetPosListRequest{
 		UserId: userID,
-		Limit:  int64(limit),
-		Page:   int64(page),
+		Limit:  int32(limit),
+		Page:   int32(page),
+		Type:   int32(parsingType),
 	})
 
 	if err != nil {
@@ -39,8 +47,8 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
-	if res.Status != int64(http.StatusOK) {
-		ctx.JSON(int(res.Status), res.Error)
+	if res.Status != int32(http.StatusOK) {
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 	utils.SendProtoMessage(ctx, res)

@@ -25,34 +25,20 @@ func TestCreatePos(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"user_id": 1,
-				"name":    fmt.Sprintf("pos %s", utils.RandomString(10)),
-				"type":    0,
-				"color":   "#FF00FF",
+				"name":  fmt.Sprintf("pos %s", utils.RandomString(10)),
+				"type":  0,
+				"color": "#FF00FF",
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusCreated, recorder.Code)
 			},
 		},
 		{
-			name: "Invalid User ID",
-			body: gin.H{
-				"user_id": 0,
-				"name":    fmt.Sprintf("pos %s", utils.RandomString(10)),
-				"type":    0,
-				"color":   "#FF00FF",
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			},
-		},
-		{
 			name: "Invalid Name",
 			body: gin.H{
-				"user_id": 1,
-				"name":    "",
-				"type":    0,
-				"color":   "#FF00FF",
+				"name":  "",
+				"type":  0,
+				"color": "#FF00FF",
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -61,10 +47,9 @@ func TestCreatePos(t *testing.T) {
 		{
 			name: "Invalid Type",
 			body: gin.H{
-				"user_id": 1,
-				"name":    fmt.Sprintf("pos %s", utils.RandomString(10)),
-				"type":    3,
-				"color":   "#FF00FF",
+				"name":  fmt.Sprintf("pos %s", utils.RandomString(10)),
+				"type":  3,
+				"color": "#FF00FF",
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -73,10 +58,9 @@ func TestCreatePos(t *testing.T) {
 		{
 			name: "Invalid Color",
 			body: gin.H{
-				"user_id": 1,
-				"name":    fmt.Sprintf("pos %s", utils.RandomString(10)),
-				"type":    0,
-				"color":   "",
+				"name":  fmt.Sprintf("pos %s", utils.RandomString(10)),
+				"type":  0,
+				"color": "",
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -118,35 +102,35 @@ func TestPostList(t *testing.T) {
 	}{
 		{
 			name:  "OK",
-			query: "user_id=1&page=1&limit=10",
+			query: "page=1&limit=10&type=0",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
 		{
-			name:  "Invalid User ID",
-			query: "user_id=0&page=1&limit=10",
+			name:  "Invalid Type",
+			query: "page=1&limit=10&type=2",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
 		{
 			name:  "Invalid Page",
-			query: "user_id=1&page=0&limit=10",
+			query: "page=0&limit=10&type=0",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
 		{
 			name:  "Invalid Limit",
-			query: "user_id=1&page=1&limit=0",
+			query: "page=1&limit=0&type=0",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
 		{
 			name:  "Pos Not Found",
-			query: "user_id=999&page=1&limit=10",
+			query: "page=100&limit=10&type=0",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)
 			},

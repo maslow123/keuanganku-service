@@ -65,17 +65,20 @@ func (s *Server) GetPosByUser(ctx context.Context, req *pb.GetPosListRequest) (*
 	if req.Page == 0 {
 		return genericListPosByUserResponse(http.StatusBadRequest, "invalid-page")
 	}
+	if req.Type != 0 && req.Type != 1 {
+		return genericListPosByUserResponse(http.StatusBadRequest, "invalid-type")
+	}
 
 	q := `
 		SELECT id, name, type, total, color
 		FROM pos
-		WHERE user_id = $1
-		LIMIT $2
-		OFFSET $3
+		WHERE user_id = $1 AND type = $2
+		LIMIT $3
+		OFFSET $4
 	`
 
 	offset := (req.Page - 1) * req.Limit
-	rows, err := s.DB.QueryContext(ctx, q, req.UserId, req.Limit, offset)
+	rows, err := s.DB.QueryContext(ctx, q, req.UserId, req.Type, req.Limit, offset)
 	if err != nil {
 		log.Println(err)
 		if err == sql.ErrNoRows {

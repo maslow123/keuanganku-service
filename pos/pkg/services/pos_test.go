@@ -118,11 +118,12 @@ func TestPosList(t *testing.T) {
 			"OK",
 			&pb.GetPosListRequest{
 				UserId: 1,
+				Type:   0,
 				Limit:  10,
 				Page:   1,
 			},
 			&pb.GetPosListResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 			},
 		},
@@ -130,11 +131,25 @@ func TestPosList(t *testing.T) {
 			"Invalid UserID",
 			&pb.GetPosListRequest{
 				UserId: 0,
+				Type:   0,
 				Limit:  10,
 				Page:   1,
 			},
 			&pb.GetPosListResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
+				Error:  "invalid-user-id",
+			},
+		},
+		{
+			"Invalid Type",
+			&pb.GetPosListRequest{
+				UserId: 0,
+				Type:   2,
+				Limit:  10,
+				Page:   1,
+			},
+			&pb.GetPosListResponse{
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-user-id",
 			},
 		},
@@ -142,11 +157,12 @@ func TestPosList(t *testing.T) {
 			"Invalid Limit",
 			&pb.GetPosListRequest{
 				UserId: 1,
+				Type:   0,
 				Limit:  0,
 				Page:   1,
 			},
 			&pb.GetPosListResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-limit",
 			},
 		},
@@ -154,11 +170,12 @@ func TestPosList(t *testing.T) {
 			"Invalid Page",
 			&pb.GetPosListRequest{
 				UserId: 1,
+				Type:   0,
 				Limit:  10,
 				Page:   0,
 			},
 			&pb.GetPosListResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-page",
 			},
 		},
@@ -166,11 +183,12 @@ func TestPosList(t *testing.T) {
 			"Pos Not found",
 			&pb.GetPosListRequest{
 				UserId: 999,
+				Type:   0,
 				Limit:  10,
 				Page:   1,
 			},
 			&pb.GetPosListResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "pos-not-found",
 			},
 		},
@@ -194,7 +212,7 @@ func TestPosList(t *testing.T) {
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
 
-			if response.Status == int64(http.StatusOK) {
+			if response.Status == int32(http.StatusOK) {
 				require.NotEmpty(t, response.Pos)
 			}
 		})

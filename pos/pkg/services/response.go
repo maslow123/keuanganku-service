@@ -18,7 +18,7 @@ func genericPosDetailResponse(statusCode int, errorMessage string) (*pb.PosDetai
 
 func genericListPosByUserResponse(statusCode int, errorMessage string) (*pb.GetPosListResponse, error) {
 	return &pb.GetPosListResponse{
-		Status: int64(statusCode),
+		Status: int32(statusCode),
 		Error:  errorMessage,
 	}, nil
 }

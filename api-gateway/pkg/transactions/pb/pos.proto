@@ -37,16 +37,17 @@ message PosDetailResponse {
 }
 
 message GetPosListRequest {
-  int64 limit = 1;
-  int64 page = 2;
+  int32 limit = 1;
+  int32 page = 2;
   int64 user_id = 3;
+  int32 type = 4;
 }
 
 message GetPosListResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
-  int64 limit = 3;
-  int64 page = 4;
+  int32 limit = 3;
+  int32 page = 4;
   repeated Pos pos = 5;
 }
 
