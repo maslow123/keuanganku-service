@@ -29,7 +29,7 @@ func TestCreatePos(t *testing.T) {
 				UserId: 1,
 			},
 			&pb.CreatePosResponse{
-				Status: int64(http.StatusCreated),
+				Status: int32(http.StatusCreated),
 				Error:  "",
 			},
 		},
@@ -42,7 +42,7 @@ func TestCreatePos(t *testing.T) {
 				UserId: 0,
 			},
 			&pb.CreatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-user",
 			},
 		},
@@ -55,7 +55,7 @@ func TestCreatePos(t *testing.T) {
 				UserId: 1,
 			},
 			&pb.CreatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-name",
 			},
 		},
@@ -68,7 +68,7 @@ func TestCreatePos(t *testing.T) {
 				UserId: 1,
 			},
 			&pb.CreatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-type",
 			},
 		},
@@ -81,7 +81,7 @@ func TestCreatePos(t *testing.T) {
 				UserId: 1,
 			},
 			&pb.CreatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-color",
 			},
 		},
@@ -229,30 +229,30 @@ func TestPosDetail(t *testing.T) {
 		{
 			"OK",
 			&pb.PosDetailRequest{
-				Id: int64(lastInsertedId),
+				Id: int32(lastInsertedId),
 			},
 			&pb.PosDetailResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 			},
 		},
 		{
 			"Invalid Pos ID",
 			&pb.PosDetailRequest{
-				Id: int64(0),
+				Id: int32(0),
 			},
 			&pb.PosDetailResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-id",
 			},
 		},
 		{
 			"Pos Not Found",
 			&pb.PosDetailRequest{
-				Id: int64(9999),
+				Id: int32(9999),
 			},
 			&pb.PosDetailResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "pos-not-found",
 			},
 		},
@@ -274,7 +274,7 @@ func TestPosDetail(t *testing.T) {
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
 
-			if response.Status == int64(http.StatusOK) {
+			if response.Status == int32(http.StatusOK) {
 				require.NotNil(t, response.Pos)
 			}
 		})
@@ -294,7 +294,7 @@ func TestUpdatePos(t *testing.T) {
 				Color: fmt.Sprintf("#%s", utils.RandomString(6)),
 			},
 			&pb.UpdatePosResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 			},
 		},
@@ -306,7 +306,7 @@ func TestUpdatePos(t *testing.T) {
 				Color: fmt.Sprintf("#%s", utils.RandomString(6)),
 			},
 			&pb.UpdatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-id",
 			},
 		},
@@ -318,7 +318,7 @@ func TestUpdatePos(t *testing.T) {
 				Color: fmt.Sprintf("#%s", utils.RandomString(6)),
 			},
 			&pb.UpdatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-name",
 			},
 		},
@@ -331,7 +331,7 @@ func TestUpdatePos(t *testing.T) {
 				Color: "",
 			},
 			&pb.UpdatePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-color",
 			},
 		},
@@ -343,7 +343,7 @@ func TestUpdatePos(t *testing.T) {
 				Color: fmt.Sprintf("#%s", utils.RandomString(6)),
 			},
 			&pb.UpdatePosResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "pos-not-found",
 			},
 		},
@@ -365,7 +365,7 @@ func TestUpdatePos(t *testing.T) {
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
 
-			if response.Status == int64(http.StatusOK) {
+			if response.Status == int32(http.StatusOK) {
 				require.NotNil(t, response.Pos)
 				require.Equal(t, response.Pos.Name, tc.req.Name)
 			}
@@ -375,12 +375,12 @@ func TestUpdatePos(t *testing.T) {
 func TestDeletePos(t *testing.T) {
 	testCases := []struct {
 		name     string
-		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64
+		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32
 		resp     *pb.DeletePosResponse
 	}{
 		{
 			"OK",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				arg := &pb.CreatePosRequest{
 					UserId: 1,
 					Name:   utils.RandomString(10),
@@ -394,27 +394,27 @@ func TestDeletePos(t *testing.T) {
 
 			},
 			&pb.DeletePosResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 			},
 		},
 		{
 			"Invalid ID",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return 0
 			},
 			&pb.DeletePosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-id",
 			},
 		},
 		{
 			"Pos Not Found",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return 999
 			},
 			&pb.DeletePosResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "pos-not-found",
 			},
 		},
@@ -445,17 +445,17 @@ func TestDeletePos(t *testing.T) {
 }
 
 func TestUpdateTotalPos(t *testing.T) {
-	var lastInsertedId int64
+	var lastInsertedId int32
 	testCases := []struct {
 		name     string
-		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64
+		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32
 		action   pb.UpdateTotalPosRequest_ActionTransaction
-		amount   int64
+		amount   int32
 		resp     *pb.UpdateTotalPosResponse
 	}{
 		{
 			"OK Increment",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				arg := &pb.CreatePosRequest{
 					UserId: 1,
 					Name:   utils.RandomString(10),
@@ -472,77 +472,77 @@ func TestUpdateTotalPos(t *testing.T) {
 			pb.UpdateTotalPosRequest_INCREASE,
 			5000,
 			&pb.UpdateTotalPosResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 				Total:  5000,
 			},
 		},
 		{
 			"OK Decrement",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return lastInsertedId
 
 			},
 			pb.UpdateTotalPosRequest_DECREASE,
 			5000,
 			&pb.UpdateTotalPosResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 				Total:  0,
 			},
 		},
 		{
 			"Invalid ID",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return 0
 
 			},
 			pb.UpdateTotalPosRequest_INCREASE,
 			5000,
 			&pb.UpdateTotalPosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-id",
 				Total:  0,
 			},
 		},
 		{
 			"Invalid Action",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return lastInsertedId
 
 			},
 			3,
 			5000,
 			&pb.UpdateTotalPosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-action",
 				Total:  0,
 			},
 		},
 		{
 			"Invalid Amount",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return lastInsertedId
 
 			},
 			pb.UpdateTotalPosRequest_INCREASE,
 			0,
 			&pb.UpdateTotalPosResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-amount",
 				Total:  0,
 			},
 		},
 		{
 			"Pos Not Found",
-			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int64 {
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
 				return 99999
 
 			},
 			pb.UpdateTotalPosRequest_INCREASE,
 			5000,
 			&pb.UpdateTotalPosResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "pos-not-found",
 				Total:  0,
 			},
@@ -571,7 +571,7 @@ func TestUpdateTotalPos(t *testing.T) {
 
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
-			if response.Status == int64(http.StatusOK) {
+			if response.Status == int32(http.StatusOK) {
 				require.Equal(t, tc.resp.Total, response.Total)
 			}
 		})

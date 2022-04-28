@@ -18,7 +18,7 @@ type UpdatePosRequest struct {
 func UpdatePosByUser(ctx *gin.Context, c pb.PosServiceClient) {
 	var req UpdatePosRequest
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
 		return
@@ -30,7 +30,7 @@ func UpdatePosByUser(ctx *gin.Context, c pb.PosServiceClient) {
 	}
 
 	res, err := c.UpdatePosByUser(context.Background(), &pb.UpdatePosRequest{
-		Id:    id,
+		Id:    int32(id),
 		Name:  req.Name,
 		Color: req.Color,
 	})
@@ -40,7 +40,7 @@ func UpdatePosByUser(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
-	if res.Status != int64(http.StatusOK) {
+	if res.Status != int32(http.StatusOK) {
 		ctx.JSON(int(res.Status), res.Error)
 		return
 	}

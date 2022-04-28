@@ -52,7 +52,7 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		&hashedPassword,
 	)
 
-	var lastInsertedId int64
+	var lastInsertedId int32
 
 	err := row.Scan(&lastInsertedId)
 	if err != nil {

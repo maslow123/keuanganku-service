@@ -23,7 +23,7 @@ func CreatePos(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
-	userID := ctx.Value("user_id").(int64)
+	userID := ctx.Value("user_id").(int32)
 
 	res, err := c.CreatePos(context.Background(), &pb.CreatePosRequest{
 		UserId: userID,
@@ -36,7 +36,7 @@ func CreatePos(ctx *gin.Context, c pb.PosServiceClient) {
 		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
 	}
-	if res.Status != int64(http.StatusCreated) {
+	if res.Status != int32(http.StatusCreated) {
 		ctx.JSON(int(res.Status), res)
 		return
 	}

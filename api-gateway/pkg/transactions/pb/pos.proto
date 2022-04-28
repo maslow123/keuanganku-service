@@ -5,33 +5,33 @@ package pos;
 option go_package = "./pkg/transactions/pb";
 
 message Pos {
-  int64 id = 1;
+  int32 id = 1;
   string name = 2;
   int32 type = 3;
   int32 total = 4;
   string color = 5;
-  int64 created_at = 6;
-  int64 updated_at = 7;
+  int32 created_at = 6;
+  int32 updated_at = 7;
 }
 
 // CreatePos
 message CreatePosRequest {
-  int64 user_id = 1;
+  int32 user_id = 1;
   string name = 2;
   int32 type = 3;
   string color = 4;
 }
 
 message CreatePosResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
-  int64 id = 3;
+  int32 id = 3;
 }
 
-message PosDetailRequest { int64 id = 1; }
+message PosDetailRequest { int32 id = 1; }
 
 message PosDetailResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
   Pos pos = 3;
 }
@@ -39,7 +39,7 @@ message PosDetailResponse {
 message GetPosListRequest {
   int32 limit = 1;
   int32 page = 2;
-  int64 user_id = 3;
+  int32 user_id = 3;
   int32 type = 4;
 }
 
@@ -52,23 +52,23 @@ message GetPosListResponse {
 }
 
 message UpdatePosRequest {
-  int64 id = 1;
+  int32 id = 1;
   string name = 2;
   string color = 3;
 }
 
 message UpdatePosResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
   Pos pos = 3;
 }
 
 message DeletePosRequest {
-  int64 id = 1;
+  int32 id = 1;
 }
 
 message DeletePosResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
 }
 
@@ -78,15 +78,15 @@ message UpdateTotalPosRequest {
     DECREASE = 1;
   };
 
-  int64 id = 1;
+  int32 id = 1;
   ActionTransaction action = 2;
-  int64 amount = 3;
+  int32 amount = 3;
 }
 
 message UpdateTotalPosResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
-  int64 total = 3;
+  int32 total = 3;
 }
 
 service PosService {

@@ -31,7 +31,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: randPass,
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusCreated),
+				Status: int32(http.StatusCreated),
 				Error:  "",
 			},
 		},
@@ -44,7 +44,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: randPass,
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-name",
 			},
 		},
@@ -57,7 +57,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: randPass,
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-email",
 			},
 		},
@@ -70,7 +70,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: randPass,
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-password",
 			},
 		},
@@ -83,7 +83,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: "",
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-confirm-password",
 			},
 		},
@@ -96,7 +96,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: "not match",
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "password-not-match",
 			},
 		},
@@ -109,7 +109,7 @@ func TestRegister(t *testing.T) {
 				ConfirmPassword: randPass,
 			},
 			&pb.RegisterResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "email-already-exists",
 			},
 		},
@@ -150,7 +150,7 @@ func TestLogin(t *testing.T) {
 				Password: randPass,
 			},
 			&pb.LoginResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 			},
 		},
@@ -161,7 +161,7 @@ func TestLogin(t *testing.T) {
 				Password: randPass,
 			},
 			&pb.LoginResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-email",
 			},
 		},
@@ -172,7 +172,7 @@ func TestLogin(t *testing.T) {
 				Password: "",
 			},
 			&pb.LoginResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-password",
 			},
 		},
@@ -183,7 +183,7 @@ func TestLogin(t *testing.T) {
 				Password: "wrong password",
 			},
 			&pb.LoginResponse{
-				Status: int64(http.StatusUnauthorized),
+				Status: int32(http.StatusUnauthorized),
 				Error:  "password-not-match",
 			},
 		},
@@ -194,7 +194,7 @@ func TestLogin(t *testing.T) {
 				Password: "xxxx",
 			},
 			&pb.LoginResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "user-not-found",
 			},
 		},
@@ -216,7 +216,7 @@ func TestLogin(t *testing.T) {
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
 
-			if response.Status == int64(http.StatusOK) {
+			if response.Status == int32(http.StatusOK) {
 				require.NotEmpty(t, response.Token)
 				require.NotNil(t, response.User)
 			}

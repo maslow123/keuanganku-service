@@ -35,7 +35,7 @@ github.com/maslow123/pos/pkg/services/pos.go:113.35,115.3 1 0
 github.com/maslow123/pos/pkg/services/pos.go:117.19,119.3 1 1
 github.com/maslow123/pos/pkg/services/pos.go:132.106,133.17 1 1
 github.com/maslow123/pos/pkg/services/pos.go:136.2,155.16 6 1
-github.com/maslow123/pos/pkg/services/pos.go:163.2,171.18 4 0
+github.com/maslow123/pos/pkg/services/pos.go:163.2,171.18 4 1
 github.com/maslow123/pos/pkg/services/pos.go:133.17,135.3 1 1
 github.com/maslow123/pos/pkg/services/pos.go:155.16,157.27 2 1
 github.com/maslow123/pos/pkg/services/pos.go:160.3,160.79 1 0
@@ -44,7 +44,7 @@ github.com/maslow123/pos/pkg/services/pos.go:174.112,175.17 1 1
 github.com/maslow123/pos/pkg/services/pos.go:178.2,178.20 1 1
 github.com/maslow123/pos/pkg/services/pos.go:181.2,181.21 1 1
 github.com/maslow123/pos/pkg/services/pos.go:185.2,209.16 6 1
-github.com/maslow123/pos/pkg/services/pos.go:217.2,226.18 4 0
+github.com/maslow123/pos/pkg/services/pos.go:217.2,226.18 4 1
 github.com/maslow123/pos/pkg/services/pos.go:175.17,177.3 1 1
 github.com/maslow123/pos/pkg/services/pos.go:178.20,180.3 1 1
 github.com/maslow123/pos/pkg/services/pos.go:181.21,183.3 1 1

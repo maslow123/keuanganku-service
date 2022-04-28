@@ -10,16 +10,16 @@ import (
 type JwtWrapper struct {
 	SecretKey       string
 	Issuer          string
-	ExpirationHours int64
+	ExpirationHours int32
 }
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	Id     int64
-	UserId int64
+	Id     int32
+	UserId int32
 }
 
-func (w *JwtWrapper) GenerateToken(userId int64) (signedToken string, err error) {
+func (w *JwtWrapper) GenerateToken(userId int32) (signedToken string, err error) {
 	claims := &jwtClaims{
 		UserId: userId,
 		StandardClaims: jwt.StandardClaims{

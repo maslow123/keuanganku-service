@@ -12,8 +12,8 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func RandomPrice(min, max int64) int64 {
-	return min + rand.Int63n(max-min+1)
+func RandomPrice(min, max int32) int32 {
+	return min + rand.Int31n(max-min+1)
 }
 
 func RandomString(n int) string {

@@ -18,7 +18,7 @@ func PosDetail(ctx *gin.Context, c pb.PosServiceClient) {
 	}
 
 	res, err := c.PosDetail(context.Background(), &pb.PosDetailRequest{
-		Id: int64(id),
+		Id: int32(id),
 	})
 
 	if err != nil {
@@ -26,7 +26,7 @@ func PosDetail(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
-	if res.Status != int64(http.StatusCreated) {
+	if res.Status != int32(http.StatusCreated) {
 		ctx.JSON(int(res.Status), res.Error)
 		return
 	}

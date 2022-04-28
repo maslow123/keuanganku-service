@@ -15,7 +15,7 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 	limitString := ctx.Query("limit")
 	pageString := ctx.Query("page")
 	typeString := ctx.Query("type")
-	userID := ctx.Value("user_id").(int64)
+	userID := ctx.Value("user_id").(int32)
 
 	limit, err := strconv.Atoi(limitString)
 	if err != nil {

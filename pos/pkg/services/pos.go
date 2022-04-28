@@ -38,7 +38,7 @@ func (s *Server) CreatePos(ctx context.Context, req *pb.CreatePosRequest) (*pb.C
 		&req.Color,
 	)
 
-	var lastInsertedId int64
+	var lastInsertedId int32
 
 	err := row.Scan(&lastInsertedId)
 	if err != nil {
@@ -160,8 +160,8 @@ func (s *Server) PosDetail(ctx context.Context, req *pb.PosDetailRequest) (*pb.P
 		return genericPosDetailResponse(http.StatusInternalServerError, err.Error())
 	}
 
-	pos.CreatedAt = createdAt.Unix()
-	pos.UpdatedAt = updatedAt.Unix()
+	pos.CreatedAt = int32(createdAt.Unix())
+	pos.UpdatedAt = int32(updatedAt.Unix())
 
 	resp := &pb.PosDetailResponse{
 		Status: http.StatusOK,
@@ -214,8 +214,8 @@ func (s *Server) UpdatePosByUser(ctx context.Context, req *pb.UpdatePosRequest) 
 		return genericUpdatePosByUserResponse(http.StatusInternalServerError, err.Error())
 	}
 
-	p.CreatedAt = createdAt.Unix()
-	p.UpdatedAt = updatedAt.Unix()
+	p.CreatedAt = int32(createdAt.Unix())
+	p.UpdatedAt = int32(updatedAt.Unix())
 
 	resp := &pb.UpdatePosResponse{
 		Status: http.StatusOK,
@@ -275,7 +275,7 @@ func (s *Server) UpdateTotalPosByUser(ctx context.Context, req *pb.UpdateTotalPo
 		&req.Id,
 	)
 
-	var total int64
+	var total int32
 	err := row.Scan(&total)
 	if err != nil {
 		log.Println(err)

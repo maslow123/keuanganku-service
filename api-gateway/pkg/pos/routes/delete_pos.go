@@ -12,14 +12,14 @@ import (
 
 func DeletePosByUser(ctx *gin.Context, c pb.PosServiceClient) {
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
 		return
 	}
 
 	res, err := c.DeletePosByUser(context.Background(), &pb.DeletePosRequest{
-		Id: id,
+		Id: int32(id),
 	})
 
 	if err != nil {
@@ -27,7 +27,7 @@ func DeletePosByUser(ctx *gin.Context, c pb.PosServiceClient) {
 		return
 	}
 
-	if res.Status != int64(http.StatusOK) {
+	if res.Status != int32(http.StatusOK) {
 		ctx.JSON(int(res.Status), res.Error)
 		return
 	}

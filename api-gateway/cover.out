@@ -27,9 +27,9 @@ github.com/maslow123/api-gateway/pkg/pos/routes.go:33.56,35.2 1 1
 github.com/maslow123/api-gateway/pkg/pos/routes.go:37.55,39.2 1 1
 github.com/maslow123/api-gateway/pkg/pos/routes.go:41.61,43.2 1 1
 github.com/maslow123/api-gateway/pkg/pos/routes.go:45.61,47.2 1 1
-github.com/maslow123/api-gateway/pkg/transactions/client.go:17.70,21.16 2 1
-github.com/maslow123/api-gateway/pkg/transactions/client.go:25.2,25.43 1 1
-github.com/maslow123/api-gateway/pkg/transactions/client.go:21.16,23.3 1 0
 github.com/maslow123/api-gateway/pkg/transactions/routes.go:10.99,24.2 7 1
 github.com/maslow123/api-gateway/pkg/transactions/routes.go:26.63,28.2 1 1
 github.com/maslow123/api-gateway/pkg/transactions/routes.go:30.64,32.2 1 1
+github.com/maslow123/api-gateway/pkg/transactions/client.go:17.70,21.16 2 1
+github.com/maslow123/api-gateway/pkg/transactions/client.go:25.2,25.43 1 1
+github.com/maslow123/api-gateway/pkg/transactions/client.go:21.16,23.3 1 0

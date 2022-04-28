@@ -214,7 +214,7 @@ func TestPosDetail(t *testing.T) {
 func TestUpdatePos(t *testing.T) {
 	testCases := []struct {
 		name          string
-		posID         int64
+		posID         int32
 		body          gin.H
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
@@ -303,12 +303,12 @@ func TestUpdatePos(t *testing.T) {
 func TestDeletePos(t *testing.T) {
 	testCases := []struct {
 		name          string
-		posID         func(t *testing.T, server *ServiceClient, authorizationHeader string) int64
+		posID         func(t *testing.T, server *ServiceClient, authorizationHeader string) int32
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name: "OK",
-			posID: func(t *testing.T, server *ServiceClient, authorizationHeader string) int64 {
+			posID: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
 				return createRandomPOS(t, server, authorizationHeader)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -317,7 +317,7 @@ func TestDeletePos(t *testing.T) {
 		},
 		{
 			name: "Invalid ID",
-			posID: func(t *testing.T, server *ServiceClient, authorizationHeader string) int64 {
+			posID: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
 				return 0
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -326,7 +326,7 @@ func TestDeletePos(t *testing.T) {
 		},
 		{
 			name: "Pos Not Found",
-			posID: func(t *testing.T, server *ServiceClient, authorizationHeader string) int64 {
+			posID: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
 				return 9999
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -358,17 +358,17 @@ func TestDeletePos(t *testing.T) {
 	}
 }
 
-func createRandomPOS(t *testing.T, server *ServiceClient, authorizationHeader string) int64 {
+func createRandomPOS(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
 	recorder := httptest.NewRecorder()
 
 	body := gin.H{
-		"user_id": 1,
-		"name":    fmt.Sprintf("pos %s", utils.RandomString(10)),
-		"type":    0,
-		"color":   "#FF00FF",
+		"name":  fmt.Sprintf("pos %s", utils.RandomString(10)),
+		"type":  0,
+		"color": "#FF00FF",
 	}
 
 	data, err := json.Marshal(body)
+	log.Println(err)
 	require.NoError(t, err)
 
 	url := "/pos/create"
