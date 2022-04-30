@@ -26,7 +26,7 @@ func InitPosServiceClient(url string) PosServiceClient {
 	return c
 }
 
-func (c *PosServiceClient) PosDetail(posId int64) (*pb.PosDetailResponse, error) {
+func (c *PosServiceClient) PosDetail(posId int32) (*pb.PosDetailResponse, error) {
 	req := &pb.PosDetailRequest{
 		Id: posId,
 	}
@@ -34,7 +34,7 @@ func (c *PosServiceClient) PosDetail(posId int64) (*pb.PosDetailResponse, error)
 	return c.Client.PosDetail(context.Background(), req)
 }
 
-func (c *PosServiceClient) UpdateTotalPosByUser(posId, amount int64) (*pb.UpdateTotalPosResponse, error) {
+func (c *PosServiceClient) UpdateTotalPosByUser(posId, amount int32) (*pb.UpdateTotalPosResponse, error) {
 	req := &pb.UpdateTotalPosRequest{
 		Id:     posId,
 		Amount: amount,

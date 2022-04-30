@@ -23,7 +23,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	}
 	// check existing pos
 	pos, err := s.PosService.PosDetail(req.PosId)
-	if err != nil || pos.Status != int64(http.StatusOK) {
+	if err != nil || pos.Status != int32(http.StatusOK) {
 		log.Println(err)
 		return genericCreateTransactionResponse(int(pos.Status), pos.Error)
 	}
@@ -53,7 +53,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 
 	// Change pos total
 	updatePos, err := s.PosService.UpdateTotalPosByUser(req.PosId, req.Total)
-	if err != nil || pos.Status != int64(http.StatusOK) {
+	if err != nil || pos.Status != int32(http.StatusOK) {
 		log.Println(err)
 		return genericCreateTransactionResponse(int(pos.Status), pos.Error)
 	}
@@ -62,7 +62,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	resp := &pb.CreateTransactionResponse{
 		Status: http.StatusCreated,
 		Error:  "",
-		Id:     int64(lastInsertedId),
+		Id:     int32(lastInsertedId),
 	}
 	return resp, nil
 }
@@ -138,5 +138,6 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 		Page:        req.Page,
 		Transaction: transactions,
 	}
+
 	return resp, nil
 }

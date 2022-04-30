@@ -32,7 +32,7 @@ func addAuthorization(
 	server *ServiceClient,
 ) string {
 	type LoginResponse struct {
-		Status int64
+		Status int32
 		Token  string
 	}
 	// Login User

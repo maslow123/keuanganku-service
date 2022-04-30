@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -11,15 +12,8 @@ import (
 )
 
 func GetUserTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
-	userIDString := ctx.Query("user_id")
 	limitString := ctx.Query("limit")
 	pageString := ctx.Query("page")
-
-	userID, err := strconv.Atoi(userIDString)
-	if err != nil {
-		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
-		return
-	}
 
 	limit, err := strconv.Atoi(limitString)
 	if err != nil {
@@ -33,20 +27,23 @@ func GetUserTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 		return
 	}
 
+	userID := ctx.Value("user_id").(int32)
+
 	res, err := c.GetTransactionByUser(context.Background(), &pb.GetTransactionListRequest{
-		UserId: int64(userID),
-		Limit:  int64(limit),
-		Page:   int64(page),
+		UserId: userID,
+		Limit:  int32(limit),
+		Page:   int32(page),
 	})
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
 	}
-	if res.Status != int64(http.StatusCreated) {
+	if res.Status != int32(http.StatusOK) {
 		ctx.JSON(int(res.Status), res.Error)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, &res)
+	log.Println(res)
+	utils.SendProtoMessage(ctx, res, http.StatusOK)
 }

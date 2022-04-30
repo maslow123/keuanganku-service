@@ -10,12 +10,12 @@ import (
 type JwtWrapper struct {
 	SecretKey       string
 	Issuer          string
-	ExpirationHours int64
+	ExpirationHours int32
 }
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	Id    int64
+	Id    int32
 	Email string
 }
 

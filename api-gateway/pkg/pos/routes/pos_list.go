@@ -51,5 +51,5 @@ func GetPosList(ctx *gin.Context, c pb.PosServiceClient) {
 		ctx.JSON(int(res.Status), res)
 		return
 	}
-	utils.SendProtoMessage(ctx, res)
+	utils.SendProtoMessage(ctx, res, http.StatusOK)
 }

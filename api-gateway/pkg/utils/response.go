@@ -13,8 +13,10 @@ func ErrorResponse(err error) gin.H {
 	}
 }
 
-func SendProtoMessage(ctx *gin.Context, res protoiface.MessageV1) {
+func SendProtoMessage(ctx *gin.Context, res protoiface.MessageV1, status int) {
 	ctx.Writer.Header().Set("Content-Type", "application/json")
-	m := jsonpb.Marshaler{EmitDefaults: true}
+	ctx.Status(status)
+
+	m := jsonpb.Marshaler{EmitDefaults: true, OrigName: true}
 	m.Marshal(ctx.Writer, res)
 }

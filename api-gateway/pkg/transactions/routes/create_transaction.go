@@ -10,9 +10,8 @@ import (
 )
 
 type CreateTransactionRequest struct {
-	UserId  int64  `json:"user_id"`
-	PosId   int64  `json:"pos_id"`
-	Total   int64  `json:"total"`
+	PosId   int32  `json:"pos_id"`
+	Total   int32  `json:"total"`
 	Details string `json:"details"`
 }
 
@@ -24,8 +23,10 @@ func CreateTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 		return
 	}
 
+	userID := ctx.Value("user_id").(int32)
+
 	res, err := c.CreateTransaction(context.Background(), &pb.CreateTransactionRequest{
-		UserId:  req.UserId,
+		UserId:  int32(userID),
 		PosId:   req.PosId,
 		Total:   req.Total,
 		Details: req.Details,
@@ -35,10 +36,9 @@ func CreateTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
 	}
-	if res.Status != int64(http.StatusCreated) {
+	if res.Status != int32(http.StatusCreated) {
 		ctx.JSON(int(res.Status), res.Error)
 		return
 	}
-
-	ctx.JSON(http.StatusCreated, &res)
+	utils.SendProtoMessage(ctx, res, http.StatusCreated)
 }

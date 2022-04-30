@@ -25,7 +25,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details: "Beli cireng",
 			},
 			&pb.CreateTransactionResponse{
-				Status: int64(http.StatusCreated),
+				Status: int32(http.StatusCreated),
 				Error:  "",
 			},
 		},
@@ -38,7 +38,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details: "Beli cireng",
 			},
 			&pb.CreateTransactionResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-user-id",
 			},
 		},
@@ -51,7 +51,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details: "Beli cireng",
 			},
 			&pb.CreateTransactionResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-pos-id",
 			},
 		},
@@ -64,7 +64,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details: "Beli cireng",
 			},
 			&pb.CreateTransactionResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-total",
 			},
 		},
@@ -77,7 +77,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details: "",
 			},
 			&pb.CreateTransactionResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-details",
 			},
 		},
@@ -90,7 +90,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details: "Beli cireng",
 			},
 			&pb.CreateTransactionResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "pos-not-found",
 			},
 		},
@@ -130,7 +130,7 @@ func TestGetTransactionList(t *testing.T) {
 				Limit:  5,
 			},
 			&pb.GetTransactionListResponse{
-				Status: int64(http.StatusOK),
+				Status: int32(http.StatusOK),
 				Error:  "",
 			},
 		},
@@ -142,7 +142,7 @@ func TestGetTransactionList(t *testing.T) {
 				Limit:  5,
 			},
 			&pb.GetTransactionListResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-user-id",
 			},
 		},
@@ -154,7 +154,7 @@ func TestGetTransactionList(t *testing.T) {
 				Limit:  5,
 			},
 			&pb.GetTransactionListResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-page",
 			},
 		},
@@ -166,7 +166,7 @@ func TestGetTransactionList(t *testing.T) {
 				Limit:  0,
 			},
 			&pb.GetTransactionListResponse{
-				Status: int64(http.StatusBadRequest),
+				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-limit",
 			},
 		},
@@ -178,7 +178,7 @@ func TestGetTransactionList(t *testing.T) {
 				Limit:  100,
 			},
 			&pb.GetTransactionListResponse{
-				Status: int64(http.StatusNotFound),
+				Status: int32(http.StatusNotFound),
 				Error:  "transaction-not-found",
 			},
 		},
@@ -200,7 +200,7 @@ func TestGetTransactionList(t *testing.T) {
 
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
-			if response.Status == int64(http.StatusOK) {
+			if response.Status == int32(http.StatusOK) {
 				require.NotEmpty(t, response.Transaction)
 			}
 		})

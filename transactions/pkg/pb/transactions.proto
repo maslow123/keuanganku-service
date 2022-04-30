@@ -1,56 +1,57 @@
 syntax = "proto3";
+import "pb/pos.proto";
+import "gogo.proto";
 
 package transactions;
 option go_package = "./pkg/pb";
 
-import "pb/pos.proto";
 
 
 message Transaction {
-  int64 id = 1;
-  string user_id = 2;
-  int32 pos_id = 3;
-  int64 total = 4;
+  int32 id = 1;
+  string user_id = 2 [(gogoproto.jsontag) = "user_id"];;
+  int32 pos_id = 3 [(gogoproto.jsontag) = "pos_ud"];;
+  int32 total = 4;
   string details = 5;
-  int64 created_at = 6;
-  int64 updated_at = 7;
+  int32 created_at = 6 [(gogoproto.jsontag) = "created_at"];;
+  int32 updated_at = 7 [(gogoproto.jsontag) = "updated_at"];;
   pos.Pos pos = 8;
 }
 
 // CreateTransaction
 message CreateTransactionRequest {
-  int64 user_id = 1;
-  int64 pos_id = 2;
-  int64 total = 3;
+  int32 user_id = 1;
+  int32 pos_id = 2;
+  int32 total = 3;
   string details = 4;
 }
 
 message CreateTransactionResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
-  int64 id = 3;
+  int32 id = 3;
 }
 
-// message TransactionDetailRequest { int64 id = 1; }
+// message TransactionDetailRequest { int32 id = 1; }
 
 // message TransactionDetailResponse {
-//   int64 status = 1;
+//   int32 status = 1;
 //   string error = 2;
 //   Transaction Transaction = 3;
 // }
 
 message GetTransactionListRequest {
-  int64 limit = 1;
-  int64 page = 2;
-  int64 user_id = 3;
+  int32 limit = 1;
+  int32 page = 2;
+  int32 user_id = 3;
 }
 
 message GetTransactionListResponse {
-  int64 status = 1;
+  int32 status = 1;
   string error = 2;
-  int64 limit = 3;
-  int64 page = 4;
-  repeated Transaction Transaction = 5;
+  int32 limit = 3;
+  int32 page = 4;
+  repeated Transaction transaction = 5;
 }
 
 service TransactionService {

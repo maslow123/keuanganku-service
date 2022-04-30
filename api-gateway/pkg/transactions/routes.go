@@ -15,6 +15,7 @@ func RegisterRoutes(r *gin.Engine, c *config.Config, userSvc *users.ServiceClien
 		Router: r,
 	}
 
+	r.Use(a.CORSMiddleware)
 	routes := r.Group("/transactions")
 	routes.Use(a.AuthRequired)
 	routes.POST("/create", svc.CreateTransaction)

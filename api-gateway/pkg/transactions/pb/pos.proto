@@ -1,23 +1,23 @@
 syntax = "proto3";
+import "gogo.proto";
 
 package pos;
-
 option go_package = "./pkg/transactions/pb";
 
 message Pos {
-  int32 id = 1;
-  string name = 2;
-  int32 type = 3;
+  int32 id = 1 [(gogoproto.jsontag) = "id"];
+  string name = 2 [(gogoproto.jsontag) = "name"];
+  int32 type = 3  [(gogoproto.jsontag) = "type"];
   int32 total = 4;
-  string color = 5;
-  int32 created_at = 6;
-  int32 updated_at = 7;
+  string color = 5 [(gogoproto.jsontag) = "color"];
+  int32 created_at = 6 [(gogoproto.jsontag) = "created_at"];
+  int32 updated_at = 7 [(gogoproto.jsontag) = "updated_at"];
 }
 
 // CreatePos
 message CreatePosRequest {
   int32 user_id = 1;
-  string name = 2;
+  string name = 2;  
   int32 type = 3;
   string color = 4;
 }
@@ -44,11 +44,11 @@ message GetPosListRequest {
 }
 
 message GetPosListResponse {
-  int32 status = 1;
-  string error = 2;
-  int32 limit = 3;
-  int32 page = 4;
-  repeated Pos pos = 5;
+  int32 status = 1[(gogoproto.jsontag) = "status"];
+  string error = 2 [(gogoproto.jsontag) = "error"];
+  int32 page = 4 [(gogoproto.jsontag) = "page"];
+  int32 limit = 3 [(gogoproto.jsontag) = "limit"];
+  repeated Pos pos = 5 [(gogoproto.jsontag) = "pos"];
 }
 
 message UpdatePosRequest {
