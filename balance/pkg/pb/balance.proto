@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "gogo.proto";
 
-package transactions;
+package balance;
 option go_package = "./pkg/pb";
 
 message Balance {
