@@ -23,6 +23,7 @@ func dialer(t *testing.T) func(context.Context, string) (net.Conn, error) {
 	listener := bufconn.Listen(1024 * 1024)
 
 	posService := client.InitPosServiceClient(c.PosServiceUrl)
+	balanceService := client.InitBalanceServiceClient(c.BalanceServiceUrl)
 
 	db, err := sql.Open("postgres", c.DBUrl)
 	if err != nil {
@@ -30,8 +31,9 @@ func dialer(t *testing.T) func(context.Context, string) (net.Conn, error) {
 	}
 
 	s := Server{
-		DB:         db,
-		PosService: posService,
+		DB:             db,
+		PosService:     posService,
+		BalanceService: balanceService,
 	}
 
 	server := grpc.NewServer()

@@ -21,10 +21,68 @@ func TestUpsertBalance(t *testing.T) {
 				UserId: 1,
 				Type:   0,
 				Total:  3000,
+				Action: pb.UpsertBalanceRequest_ActionType(pb.UpsertBalanceRequest_ActionType_value["INCREASE"]),
 			},
 			&pb.UpsertBalanceResponse{
-				Status: http.StatusCreated,
-				Error:  "",
+				Status:         http.StatusCreated,
+				Error:          "",
+				CurrentBalance: 3000,
+			},
+		},
+		{
+			"OK",
+			&pb.UpsertBalanceRequest{
+				UserId: 1,
+				Type:   0,
+				Total:  3000,
+				Action: pb.UpsertBalanceRequest_ActionType(pb.UpsertBalanceRequest_ActionType_value["DECREASE"]),
+			},
+			&pb.UpsertBalanceResponse{
+				Status:         http.StatusCreated,
+				Error:          "",
+				CurrentBalance: 0,
+			},
+		},
+		{
+			"Invalid User ID",
+			&pb.UpsertBalanceRequest{
+				UserId: 0,
+				Type:   0,
+				Total:  3000,
+				Action: pb.UpsertBalanceRequest_ActionType(pb.UpsertBalanceRequest_ActionType_value["DECREASE"]),
+			},
+			&pb.UpsertBalanceResponse{
+				Status:         http.StatusBadRequest,
+				Error:          "invalid-user-id",
+				CurrentBalance: 0,
+			},
+		},
+		{
+			"Invalid Type",
+			&pb.UpsertBalanceRequest{
+				UserId: 1,
+				Type:   3,
+				Total:  3000,
+				Action: pb.UpsertBalanceRequest_ActionType(pb.UpsertBalanceRequest_ActionType_value["DECREASE"]),
+			},
+			&pb.UpsertBalanceResponse{
+				Status:         http.StatusBadRequest,
+				Error:          "invalid-type",
+				CurrentBalance: 0,
+			},
+		},
+		{
+			"Invalid Action",
+			&pb.UpsertBalanceRequest{
+				UserId: 1,
+				Type:   0,
+				Total:  3000,
+				Action: 3,
+			},
+			&pb.UpsertBalanceResponse{
+				Status:         http.StatusBadRequest,
+				Error:          "invalid-action",
+				CurrentBalance: 0,
 			},
 		},
 	}

@@ -21,6 +21,9 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	if req.Details == "" {
 		return genericCreateTransactionResponse(http.StatusBadRequest, "invalid-details")
 	}
+	if req.ActionType != 0 && req.ActionType != 1 {
+		return genericCreateTransactionResponse(http.StatusBadRequest, "invalid-action-type")
+	}
 	// check existing pos
 	pos, err := s.PosService.PosDetail(req.PosId)
 	if err != nil || pos.Status != int32(http.StatusOK) {
@@ -51,13 +54,21 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 		return genericCreateTransactionResponse(http.StatusInternalServerError, err.Error())
 	}
 
-	// Change pos total
+	// Update pos total
 	updatePos, err := s.PosService.UpdateTotalPosByUser(req.PosId, req.Total)
 	if err != nil || pos.Status != int32(http.StatusOK) {
 		log.Println(err)
 		return genericCreateTransactionResponse(int(pos.Status), pos.Error)
 	}
 	log.Printf("===== Pos %s currently has Rp.%d =====", pos.Pos.Name, updatePos.Total)
+
+	// Update balance
+	updateBalance, err := s.BalanceService.UpsertBalance(req.UserId, pos.Pos.Type, req.ActionType, req.Total)
+	if err != nil || updateBalance.Status != http.StatusCreated {
+		log.Println(err)
+		return genericCreateTransactionResponse(int(updateBalance.Status), updateBalance.Error)
+	}
+	log.Printf("===== Balance %d currently has Rp.%d =====", updateBalance.Id, updateBalance.CurrentBalance)
 
 	resp := &pb.CreateTransactionResponse{
 		Status: http.StatusCreated,

@@ -13,7 +13,7 @@ message Balance {
   int32 updated_at = 6 [(gogoproto.jsontag) = "updated_at"];
 }
 
-message UpsertBalanceRequest {    
+message UpsertBalanceRequest {  
   enum ActionType {
     INCREASE = 0;
     DECREASE = 1;

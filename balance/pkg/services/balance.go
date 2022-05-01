@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -12,16 +13,24 @@ func (s *Server) UpsertBalance(ctx context.Context, req *pb.UpsertBalanceRequest
 	if req.UserId == 0 {
 		return genericUpsertBalanceResponse(http.StatusBadRequest, "invalid-user-id")
 	}
-	if req.Type > 1 && req.Type < 0 {
+	if req.Type != 0 && req.Type != 1 {
 		return genericUpsertBalanceResponse(http.StatusBadRequest, "invalid-type")
+	}
+	if req.Action != 0 && req.Action != 1 {
+		return genericUpsertBalanceResponse(http.StatusBadRequest, "invalid-action")
 	}
 
 	q := `
 		INSERT INTO balance (user_id, type, total)
 		VALUES ($1, $2, $3)
 		ON CONFLICT (user_id, type)
-		DO UPDATE SET total = EXCLUDED.total RETURNING id, total
+		DO UPDATE SET 
 	`
+	if req.Action == 1 {
+		q = fmt.Sprintf("%s total = balance.total - EXCLUDED.total RETURNING id, total", q)
+	} else {
+		q = fmt.Sprintf("%s total = balance.total + EXCLUDED.total RETURNING id, total", q)
+	}
 
 	row := s.DB.QueryRowContext(ctx, q,
 		&req.UserId,

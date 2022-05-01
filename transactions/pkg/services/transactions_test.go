@@ -19,10 +19,25 @@ func TestCreateTransaction(t *testing.T) {
 		{
 			"OK",
 			&pb.CreateTransactionRequest{
-				UserId:  1,
-				PosId:   1,
-				Total:   2000,
-				Details: "Beli cireng",
+				UserId:     1,
+				PosId:      1,
+				Total:      2000,
+				Details:    "Dikasih ibu",
+				ActionType: 0,
+			},
+			&pb.CreateTransactionResponse{
+				Status: int32(http.StatusCreated),
+				Error:  "",
+			},
+		},
+		{
+			"OK",
+			&pb.CreateTransactionRequest{
+				UserId:     1,
+				PosId:      1,
+				Total:      2000,
+				Details:    "Beli cireng",
+				ActionType: 1,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusCreated),
@@ -32,10 +47,11 @@ func TestCreateTransaction(t *testing.T) {
 		{
 			"Invalid UserID",
 			&pb.CreateTransactionRequest{
-				UserId:  0,
-				PosId:   1,
-				Total:   2000,
-				Details: "Beli cireng",
+				UserId:     0,
+				PosId:      1,
+				Total:      2000,
+				Details:    "Beli cireng",
+				ActionType: 0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -45,10 +61,11 @@ func TestCreateTransaction(t *testing.T) {
 		{
 			"Invalid PosID",
 			&pb.CreateTransactionRequest{
-				UserId:  1,
-				PosId:   0,
-				Total:   2000,
-				Details: "Beli cireng",
+				UserId:     1,
+				PosId:      0,
+				Total:      2000,
+				Details:    "Beli cireng",
+				ActionType: 0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -58,10 +75,11 @@ func TestCreateTransaction(t *testing.T) {
 		{
 			"Invalid Total",
 			&pb.CreateTransactionRequest{
-				UserId:  1,
-				PosId:   1,
-				Total:   0,
-				Details: "Beli cireng",
+				UserId:     1,
+				PosId:      1,
+				Total:      0,
+				Details:    "Beli cireng",
+				ActionType: 0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -69,12 +87,27 @@ func TestCreateTransaction(t *testing.T) {
 			},
 		},
 		{
+			"Invalid Balance Type",
+			&pb.CreateTransactionRequest{
+				UserId:     1,
+				PosId:      1,
+				Total:      5000,
+				Details:    "Beli cireng",
+				ActionType: 3,
+			},
+			&pb.CreateTransactionResponse{
+				Status: int32(http.StatusBadRequest),
+				Error:  "invalid-action-type",
+			},
+		},
+		{
 			"Invalid Details",
 			&pb.CreateTransactionRequest{
-				UserId:  1,
-				PosId:   1,
-				Total:   2000,
-				Details: "",
+				UserId:     1,
+				PosId:      1,
+				Total:      2000,
+				Details:    "",
+				ActionType: 0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -84,10 +117,11 @@ func TestCreateTransaction(t *testing.T) {
 		{
 			"Pos Not Found",
 			&pb.CreateTransactionRequest{
-				UserId:  1,
-				PosId:   9999999,
-				Total:   2000,
-				Details: "Beli cireng",
+				UserId:     1,
+				PosId:      9999999,
+				Total:      2000,
+				Details:    "Beli cireng",
+				ActionType: 0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusNotFound),

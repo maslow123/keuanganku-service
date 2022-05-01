@@ -7,6 +7,7 @@ import (
 )
 
 type Server struct {
-	DB         *sql.DB
-	PosService client.PosServiceClient
+	DB             *sql.DB
+	PosService     client.PosServiceClient
+	BalanceService client.BalanceServiceClient
 }
