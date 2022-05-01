@@ -9,12 +9,12 @@ option go_package = "./pkg/pb";
 
 message Transaction {
   int32 id = 1;
-  string user_id = 2 [(gogoproto.jsontag) = "user_id"];;
-  int32 pos_id = 3 [(gogoproto.jsontag) = "pos_ud"];;
+  string user_id = 2 [(gogoproto.jsontag) = "user_id"];
+  int32 pos_id = 3 [(gogoproto.jsontag) = "pos_ud"];
   int32 total = 4;
   string details = 5;
-  int32 created_at = 6 [(gogoproto.jsontag) = "created_at"];;
-  int32 updated_at = 7 [(gogoproto.jsontag) = "updated_at"];;
+  int32 created_at = 6 [(gogoproto.jsontag) = "created_at"];
+  int32 updated_at = 7 [(gogoproto.jsontag) = "updated_at"];
   pos.Pos pos = 8;
 }
 
