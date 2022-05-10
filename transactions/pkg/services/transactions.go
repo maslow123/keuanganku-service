@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/maslow123/transactions/pkg/pb"
 )
@@ -68,7 +69,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 
 	// Update balance
 	log.Println(req.ActionType, pos.Pos.Type)
-	updateBalance, err := s.BalanceService.UpsertBalance(req.UserId, pos.Pos.Type, req.ActionType, req.Total)
+	updateBalance, err := s.BalanceService.UpsertBalance(req.UserId, req.Type, req.ActionType, req.Total)
 	if err != nil || updateBalance.Status != int32(http.StatusCreated) {
 		log.Println("error: ", err)
 		return genericCreateTransactionResponse(int(updateBalance.Status), updateBalance.Error)
@@ -96,7 +97,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 
 	q := `
 		SELECT 
-			t.id, t.total, t.details, t.type,
+			t.id, t.total, t.details, t.type, t.created_at,
 			p."name" pos_name, p.type pos_type, p.total pos_total, p.color pos_color
 		FROM transactions t
 		LEFT JOIN pos p ON p.id = t.pos_id
@@ -114,6 +115,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	defer rows.Close()
 
 	var transactions []*pb.Transaction
+	var createdAt time.Time
 
 	for rows.Next() {
 		var transaction pb.Transaction
@@ -123,6 +125,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 			&transaction.Total,
 			&transaction.Details,
 			&transaction.Type,
+			&createdAt,
 
 			&pos.Name,
 			&pos.Type,
@@ -133,6 +136,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 			return genericGetTransactionListByUserResponse(http.StatusInternalServerError, err.Error())
 		}
 
+		transaction.CreatedAt = int32(createdAt.Unix())
 		transaction.Pos = &pos
 		transactions = append(transactions, &transaction)
 	}

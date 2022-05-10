@@ -27,7 +27,7 @@ func InitBalanceServiceClient(url string) BalanceServiceClient {
 	return c
 }
 
-func (c *BalanceServiceClient) UpsertBalance(userId, balanceType, action, total int32) (*pb.UpsertBalanceResponse, error) {
+func (c *BalanceServiceClient) UpsertBalance(userId, transactionType, action, total int32) (*pb.UpsertBalanceResponse, error) {
 	actionType := pb.UpsertBalanceRequest_ActionType(pb.UpsertBalanceRequest_ActionType_value["INCREASE"])
 	if action == 1 {
 		actionType = pb.UpsertBalanceRequest_ActionType(pb.UpsertBalanceRequest_ActionType_value["DECREASE"])
@@ -35,7 +35,7 @@ func (c *BalanceServiceClient) UpsertBalance(userId, balanceType, action, total 
 
 	req := &pb.UpsertBalanceRequest{
 		UserId: userId,
-		Type:   balanceType,
+		Type:   transactionType,
 		Action: actionType,
 		Total:  total,
 	}
