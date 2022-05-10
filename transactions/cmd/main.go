@@ -35,11 +35,13 @@ func main() {
 	}
 
 	posService := client.InitPosServiceClient(c.PosServiceUrl)
+	balanceService := client.InitBalanceServiceClient(c.BalanceServiceUrl)
 
 	opts := []grpc.ServerOption{}
 	api := services.Server{
-		DB:         db,
-		PosService: posService,
+		DB:             db,
+		PosService:     posService,
+		BalanceService: balanceService,
 	}
 	server := grpc.NewServer(opts...)
 	pb.RegisterTransactionServiceServer(server, &api)

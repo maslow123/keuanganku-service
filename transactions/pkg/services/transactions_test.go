@@ -24,6 +24,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      2000,
 				Details:    "Dikasih ibu",
 				ActionType: 0,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusCreated),
@@ -38,6 +39,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      2000,
 				Details:    "Beli cireng",
 				ActionType: 1,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusCreated),
@@ -52,6 +54,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      2000,
 				Details:    "Beli cireng",
 				ActionType: 0,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -66,6 +69,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      2000,
 				Details:    "Beli cireng",
 				ActionType: 0,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -80,6 +84,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      0,
 				Details:    "Beli cireng",
 				ActionType: 0,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -94,6 +99,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      5000,
 				Details:    "Beli cireng",
 				ActionType: 3,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -108,10 +114,26 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      2000,
 				Details:    "",
 				ActionType: 0,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-details",
+			},
+		},
+		{
+			"Invalid Type",
+			&pb.CreateTransactionRequest{
+				UserId:     1,
+				PosId:      1,
+				Total:      2000,
+				Details:    "test",
+				ActionType: 0,
+				Type:       2,
+			},
+			&pb.CreateTransactionResponse{
+				Status: int32(http.StatusBadRequest),
+				Error:  "invalid-type",
 			},
 		},
 		{
@@ -122,6 +144,7 @@ func TestCreateTransaction(t *testing.T) {
 				Total:      2000,
 				Details:    "Beli cireng",
 				ActionType: 0,
+				Type:       0,
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusNotFound),

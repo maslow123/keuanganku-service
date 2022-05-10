@@ -21,10 +21,11 @@ func TestCreateTransaction(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"user_id": 1,
-				"pos_id":  1,
-				"total":   10000,
-				"details": "Beli cireng",
+				"pos_id":      1,
+				"total":       10000,
+				"details":     "Beli cireng",
+				"action_type": 0,
+				"type":        1,
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusCreated, recorder.Code)

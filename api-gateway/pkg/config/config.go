@@ -7,6 +7,7 @@ type Config struct {
 	UserServiceUrl        string `mapstructure:"USER_SERVICE_URL"`
 	PosServiceUrl         string `mapstructure:"POS_SERVICE_URL"`
 	TransactionServiceUrl string `mapstructure:"TRANSACTION_SERVICE_URL"`
+	BalanceServiceUrl     string `mapstructure:"BALANCE_SERVICE_URL"`
 }
 
 func LoadConfig(path string, fileName string) (c Config, err error) {

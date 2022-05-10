@@ -24,6 +24,9 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	if req.ActionType != 0 && req.ActionType != 1 {
 		return genericCreateTransactionResponse(http.StatusBadRequest, "invalid-action-type")
 	}
+	if req.Type != 0 && req.Type != 1 {
+		return genericCreateTransactionResponse(http.StatusBadRequest, "invalid-type")
+	}
 	// check existing pos
 	pos, err := s.PosService.PosDetail(req.PosId)
 	if err != nil || pos.Status != int32(http.StatusOK) {
@@ -34,9 +37,9 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	// insert tx
 	q := `
 		INSERT INTO transactions
-		(user_id, pos_id, total, details)
+		(user_id, pos_id, total, details, type)
 		VALUES
-		($1, $2, $3, $4)
+		($1, $2, $3, $4, $5)
 		RETURNING id
 	`
 
@@ -45,6 +48,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 		&req.PosId,
 		&req.Total,
 		&req.Details,
+		&req.Type,
 	)
 	var lastInsertedId int
 	err = row.Scan(&lastInsertedId)
@@ -56,16 +60,17 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 
 	// Update pos total
 	updatePos, err := s.PosService.UpdateTotalPosByUser(req.PosId, req.Total)
-	if err != nil || pos.Status != int32(http.StatusOK) {
+	if err != nil || updatePos.Status != int32(http.StatusOK) {
 		log.Println(err)
 		return genericCreateTransactionResponse(int(pos.Status), pos.Error)
 	}
 	log.Printf("===== Pos %s currently has Rp.%d =====", pos.Pos.Name, updatePos.Total)
 
 	// Update balance
+	log.Println(req.ActionType, pos.Pos.Type)
 	updateBalance, err := s.BalanceService.UpsertBalance(req.UserId, pos.Pos.Type, req.ActionType, req.Total)
-	if err != nil || updateBalance.Status != http.StatusCreated {
-		log.Println(err)
+	if err != nil || updateBalance.Status != int32(http.StatusCreated) {
+		log.Println("error: ", err)
 		return genericCreateTransactionResponse(int(updateBalance.Status), updateBalance.Error)
 	}
 	log.Printf("===== Balance %d currently has Rp.%d =====", updateBalance.Id, updateBalance.CurrentBalance)
@@ -91,7 +96,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 
 	q := `
 		SELECT 
-			t.id, t.total, t.details,
+			t.id, t.total, t.details, t.type,
 			p."name" pos_name, p.type pos_type, p.total pos_total, p.color pos_color
 		FROM transactions t
 		LEFT JOIN pos p ON p.id = t.pos_id
@@ -117,6 +122,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 			&transaction.Id,
 			&transaction.Total,
 			&transaction.Details,
+			&transaction.Type,
 
 			&pos.Name,
 			&pos.Type,

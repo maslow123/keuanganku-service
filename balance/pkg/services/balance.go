@@ -10,6 +10,7 @@ import (
 )
 
 func (s *Server) UpsertBalance(ctx context.Context, req *pb.UpsertBalanceRequest) (*pb.UpsertBalanceResponse, error) {
+	log.Println("Hit api")
 	if req.UserId == 0 {
 		return genericUpsertBalanceResponse(http.StatusBadRequest, "invalid-user-id")
 	}
@@ -52,5 +53,7 @@ func (s *Server) UpsertBalance(ctx context.Context, req *pb.UpsertBalanceRequest
 		Id:             lastInsertedId,
 		CurrentBalance: currentBalance,
 	}
+
+	log.Println("Response: ", resp)
 	return resp, nil
 }

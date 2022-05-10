@@ -12,9 +12,10 @@ message Transaction {
   int32 pos_id = 3 [(gogoproto.jsontag) = "pos_ud"];;
   int32 total = 4;
   string details = 5;
-  int32 created_at = 6 [(gogoproto.jsontag) = "created_at"];;
-  int32 updated_at = 7 [(gogoproto.jsontag) = "updated_at"];;
-  pos.Pos pos = 8;
+  int32 type = 6;
+  int32 created_at = 7 [(gogoproto.jsontag) = "created_at"];;
+  int32 updated_at = 8 [(gogoproto.jsontag) = "updated_at"];;
+  pos.Pos pos = 9;
 }
 
 // CreateTransaction
@@ -23,6 +24,8 @@ message CreateTransactionRequest {
   int32 pos_id = 2;
   int32 total = 3;
   string details = 4;
+  int32 action_type = 5 [(gogoproto.jsontag) = "action_type"];
+  int32 type = 6;
 }
 
 message CreateTransactionResponse {
