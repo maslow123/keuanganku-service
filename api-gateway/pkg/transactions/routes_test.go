@@ -66,21 +66,28 @@ func TestGetUserTransaction(t *testing.T) {
 	}{
 		{
 			name:  "OK",
-			query: "page=1&limit=10",
+			query: "page=1&limit=10&action=0",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
 		{
 			name:  "Invalid Page",
-			query: "page=0&limit=10",
+			query: "page=0&limit=10&action=0",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
 		{
 			name:  "Invalid Limit",
-			query: "page=1&limit=0",
+			query: "page=1&limit=0&action=0",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name:  "Invalid Type",
+			query: "page=1&limit=5&action=3",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},

@@ -46,6 +46,7 @@ message GetTransactionListRequest {
   int32 limit = 1;
   int32 page = 2;
   int32 user_id = 3;
+  int32 action = 4;
 }
 
 message GetTransactionListResponse {

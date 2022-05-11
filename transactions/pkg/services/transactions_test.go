@@ -185,6 +185,7 @@ func TestGetTransactionList(t *testing.T) {
 				UserId: 1,
 				Page:   1,
 				Limit:  5,
+				Action: 0,
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusOK),
@@ -197,6 +198,7 @@ func TestGetTransactionList(t *testing.T) {
 				UserId: 0,
 				Page:   1,
 				Limit:  5,
+				Action: 0,
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
@@ -209,6 +211,7 @@ func TestGetTransactionList(t *testing.T) {
 				UserId: 1,
 				Page:   0,
 				Limit:  5,
+				Action: 0,
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
@@ -221,10 +224,24 @@ func TestGetTransactionList(t *testing.T) {
 				UserId: 1,
 				Page:   1,
 				Limit:  0,
+				Action: 0,
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
 				Error:  "invalid-limit",
+			},
+		},
+		{
+			"Invalid Type",
+			&pb.GetTransactionListRequest{
+				UserId: 1,
+				Page:   1,
+				Limit:  10,
+				Action: 3,
+			},
+			&pb.GetTransactionListResponse{
+				Status: int32(http.StatusBadRequest),
+				Error:  "invalid-type",
 			},
 		},
 		{
@@ -233,6 +250,7 @@ func TestGetTransactionList(t *testing.T) {
 				UserId: 1,
 				Page:   100,
 				Limit:  100,
+				Action: 0,
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusNotFound),

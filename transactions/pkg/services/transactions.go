@@ -38,9 +38,9 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	// insert tx
 	q := `
 		INSERT INTO transactions
-		(user_id, pos_id, total, details, type)
+		(user_id, pos_id, total, details, type, action)
 		VALUES
-		($1, $2, $3, $4, $5)
+		($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 
@@ -50,6 +50,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 		&req.Total,
 		&req.Details,
 		&req.Type,
+		&req.ActionType,
 	)
 	var lastInsertedId int
 	err = row.Scan(&lastInsertedId)
@@ -94,6 +95,9 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	if req.Limit == 0 {
 		return genericGetTransactionListByUserResponse(http.StatusBadRequest, "invalid-limit")
 	}
+	if req.Action != 0 && req.Action != 1 {
+		return genericGetTransactionListByUserResponse(http.StatusBadRequest, "invalid-type")
+	}
 
 	q := `
 		SELECT 
@@ -102,12 +106,12 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 		FROM transactions t
 		LEFT JOIN pos p ON p.id = t.pos_id
 		LEFT JOIN users u ON u.id = t.user_id
-		WHERE u.id = $1 ORDER BY t.created_at
-		LIMIT $2 OFFSET $3
+		WHERE u.id = $1 AND t.action = $2
+		ORDER BY t.created_at DESC
+		LIMIT $3 OFFSET $4
 	`
-
 	offset := (req.Page - 1) * req.Limit
-	rows, err := s.DB.QueryContext(ctx, q, req.UserId, req.Limit, offset)
+	rows, err := s.DB.QueryContext(ctx, q, req.UserId, req.Action, req.Limit, offset)
 	if err != nil {
 		log.Println(err)
 		return genericGetTransactionListByUserResponse(http.StatusInternalServerError, err.Error())
