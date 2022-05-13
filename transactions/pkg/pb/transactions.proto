@@ -47,6 +47,8 @@ message GetTransactionListRequest {
   int32 page = 2;
   int32 user_id = 3;
   int32 action = 4;
+  int32 start_date = 5;
+  int32 end_date = 6;
 }
 
 message GetTransactionListResponse {

@@ -1,4 +1,4 @@
-package pos
+package balance
 
 import (
 	"github.com/gin-gonic/gin"
@@ -18,10 +18,15 @@ func RegisterRoutes(r *gin.Engine, c *config.Config, userSvc *users.ServiceClien
 	routes := r.Group("/balance")
 	routes.Use(a.AuthRequired)
 	routes.POST("/upsert", svc.UpsertBalance)
+	routes.GET("/user", svc.GetUserBalance)
 
 	return svc
 }
 
 func (svc *ServiceClient) UpsertBalance(ctx *gin.Context) {
 	routes.UpsertBalance(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) GetUserBalance(ctx *gin.Context) {
+	routes.GetUserBalance(ctx, svc.Client)
 }

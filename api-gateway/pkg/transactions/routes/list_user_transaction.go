@@ -15,6 +15,8 @@ func GetUserTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 	limitString := ctx.Query("limit")
 	pageString := ctx.Query("page")
 	actionString := ctx.Query("action")
+	startDateString := ctx.Query("start_date")
+	endDateString := ctx.Query("end_date")
 
 	limit, err := strconv.Atoi(limitString)
 	if err != nil {
@@ -34,13 +36,27 @@ func GetUserTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 		return
 	}
 
+	startDate, err := strconv.Atoi(startDateString)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
+		return
+	}
+
+	endDate, err := strconv.Atoi(endDateString)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, utils.ErrorResponse(err))
+		return
+	}
+
 	userID := ctx.Value("user_id").(int32)
 
 	res, err := c.GetTransactionByUser(context.Background(), &pb.GetTransactionListRequest{
-		UserId: userID,
-		Limit:  int32(limit),
-		Page:   int32(page),
-		Action: int32(action),
+		UserId:    userID,
+		Limit:     int32(limit),
+		Page:      int32(page),
+		Action:    int32(action),
+		StartDate: int32(startDate),
+		EndDate:   int32(endDate),
 	})
 
 	if err != nil {
@@ -48,7 +64,7 @@ func GetUserTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 		return
 	}
 	if res.Status != int32(http.StatusOK) {
-		ctx.JSON(int(res.Status), res.Error)
+		ctx.JSON(int(res.Status), res)
 		return
 	}
 

@@ -1,4 +1,4 @@
-package pos
+package balance
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreatePos(t *testing.T) {
+func TestUpsertBalance(t *testing.T) {
 	testCases := []struct {
 		name          string
 		body          gin.H
@@ -58,6 +58,42 @@ func TestCreatePos(t *testing.T) {
 
 			url := "/balance/upsert"
 			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+			require.NoError(t, err)
+
+			request.Header.Set("Authorization", authorizationHeader)
+
+			server.Router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}
+
+func TestGetUserBalance(t *testing.T) {
+	testCases := []struct {
+		name          string
+		checkResponse func(recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+	}
+
+	// set authorizationHeader
+	server := NewServer(t)
+	authorizationHeader := addAuthorization(t, server)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			server = NewServer(t)
+			recorder := httptest.NewRecorder()
+
+			url := "/balance/user"
+			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 
 			request.Header.Set("Authorization", authorizationHeader)

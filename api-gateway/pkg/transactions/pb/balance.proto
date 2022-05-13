@@ -31,7 +31,21 @@ message UpsertBalanceResponse {
   int32 current_balance = 4 [(gogoproto.jsontag) = "current_balance"];
 }
 
+message UserBalance {
+  int32 type = 1 [(gogoproto.jsontag) = "type"];
+  int32 total = 2 [(gogoproto.jsontag) = "total"];
+}
+message GetUserBalanceRequest {
+  int32 user_id = 1;
+}
+
+message GetUserBalanceResponse {
+  int32 status = 1 [(gogoproto.jsontag) = "status"];
+  string error = 2 [(gogoproto.jsontag) = "error"];
+  repeated UserBalance balances = 3 [(gogoproto.jsontag) = "balances"];
+}
 
 service BalanceService {
   rpc UpsertBalance(UpsertBalanceRequest) returns (UpsertBalanceResponse) {}
+  rpc GetUserBalance(GetUserBalanceRequest) returns (GetUserBalanceResponse) {}
 }

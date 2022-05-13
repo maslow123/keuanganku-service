@@ -8,3 +8,10 @@ func genericUpsertBalanceResponse(statusCode int, errorMessage string) (*pb.Upse
 		Error:  errorMessage,
 	}, nil
 }
+
+func genericGetUserBalanceResponse(statusCode int, errorMessage string) (*pb.GetUserBalanceResponse, error) {
+	return &pb.GetUserBalanceResponse{
+		Status: int32(statusCode),
+		Error:  errorMessage,
+	}, nil
+}

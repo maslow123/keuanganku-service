@@ -57,3 +57,60 @@ func (s *Server) UpsertBalance(ctx context.Context, req *pb.UpsertBalanceRequest
 	log.Println("Response: ", resp)
 	return resp, nil
 }
+
+func (s *Server) GetUserBalance(ctx context.Context, req *pb.GetUserBalanceRequest) (*pb.GetUserBalanceResponse, error) {
+	if req.UserId == 0 {
+		return genericGetUserBalanceResponse(http.StatusBadRequest, "invalid-user-id")
+	}
+
+	log.Println(req.UserId)
+	q := `
+		SELECT type, total FROM balance WHERE user_id = $1
+	`
+
+	rows, err := s.DB.QueryContext(ctx, q, req.UserId)
+	if err != nil {
+		log.Println(err)
+		return genericGetUserBalanceResponse(http.StatusInternalServerError, err.Error())
+	}
+	defer rows.Close()
+
+	var balances []*pb.UserBalance
+
+	for rows.Next() {
+		log.Println("Masuk")
+		var balance pb.UserBalance
+		if err := rows.Scan(
+			&balance.Type,
+			&balance.Total,
+		); err != nil {
+			log.Println(err)
+			return genericGetUserBalanceResponse(http.StatusInternalServerError, err.Error())
+		}
+
+		balances = append(balances, &balance)
+	}
+
+	if err := rows.Close(); err != nil {
+		log.Println(err)
+		return genericGetUserBalanceResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println(err)
+		return genericGetUserBalanceResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	if len(balances) == 0 {
+		return genericGetUserBalanceResponse(http.StatusNotFound, "user-balance-not-found")
+	}
+
+	log.Println(balances)
+	resp := &pb.GetUserBalanceResponse{
+		Status:   http.StatusOK,
+		Error:    "",
+		Balances: balances,
+	}
+
+	return resp, nil
+}

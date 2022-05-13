@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/maslow123/transactions/pkg/pb"
 	"github.com/stretchr/testify/require"
@@ -182,10 +183,12 @@ func TestGetTransactionList(t *testing.T) {
 		{
 			"OK",
 			&pb.GetTransactionListRequest{
-				UserId: 1,
-				Page:   1,
-				Limit:  5,
-				Action: 0,
+				UserId:    1,
+				Page:      1,
+				Limit:     5,
+				Action:    0,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusOK),
@@ -195,10 +198,12 @@ func TestGetTransactionList(t *testing.T) {
 		{
 			"Invalid UserID",
 			&pb.GetTransactionListRequest{
-				UserId: 0,
-				Page:   1,
-				Limit:  5,
-				Action: 0,
+				UserId:    0,
+				Page:      1,
+				Limit:     5,
+				Action:    0,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
@@ -208,10 +213,12 @@ func TestGetTransactionList(t *testing.T) {
 		{
 			"Invalid Page",
 			&pb.GetTransactionListRequest{
-				UserId: 1,
-				Page:   0,
-				Limit:  5,
-				Action: 0,
+				UserId:    1,
+				Page:      0,
+				Limit:     5,
+				Action:    0,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
@@ -221,10 +228,12 @@ func TestGetTransactionList(t *testing.T) {
 		{
 			"Invalid Limit",
 			&pb.GetTransactionListRequest{
-				UserId: 1,
-				Page:   1,
-				Limit:  0,
-				Action: 0,
+				UserId:    1,
+				Page:      1,
+				Limit:     0,
+				Action:    0,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
@@ -234,10 +243,12 @@ func TestGetTransactionList(t *testing.T) {
 		{
 			"Invalid Type",
 			&pb.GetTransactionListRequest{
-				UserId: 1,
-				Page:   1,
-				Limit:  10,
-				Action: 3,
+				UserId:    1,
+				Page:      1,
+				Limit:     10,
+				Action:    3,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusBadRequest),
@@ -247,10 +258,12 @@ func TestGetTransactionList(t *testing.T) {
 		{
 			"Transaction Not Found",
 			&pb.GetTransactionListRequest{
-				UserId: 1,
-				Page:   100,
-				Limit:  100,
-				Action: 0,
+				UserId:    1,
+				Page:      100,
+				Limit:     100,
+				Action:    0,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
 			},
 			&pb.GetTransactionListResponse{
 				Status: int32(http.StatusNotFound),

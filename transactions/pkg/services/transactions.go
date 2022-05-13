@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -106,10 +107,21 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 		FROM transactions t
 		LEFT JOIN pos p ON p.id = t.pos_id
 		LEFT JOIN users u ON u.id = t.user_id
-		WHERE u.id = $1 AND t.action = $2
-		ORDER BY t.created_at DESC
-		LIMIT $3 OFFSET $4
+		WHERE u.id = $1 AND t.action = $2		
 	`
+
+	if req.StartDate != 0 && req.EndDate != 0 {
+		startDate := time.Unix(int64(req.StartDate), 0).Format("2006-01-02")
+		endDate := time.Unix(int64(req.EndDate), 0).Format("2006-01-02")
+
+		q = fmt.Sprintf("%s AND t.created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'", q, startDate, endDate)
+	}
+
+	q = fmt.Sprintf(
+		"%s ORDER BY t.created_at DESC LIMIT $3 OFFSET $4", q,
+	)
+
+	log.Println(q)
 	offset := (req.Page - 1) * req.Limit
 	rows, err := s.DB.QueryContext(ctx, q, req.UserId, req.Action, req.Limit, offset)
 	if err != nil {

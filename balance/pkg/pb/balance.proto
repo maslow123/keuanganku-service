@@ -1,4 +1,6 @@
 syntax = "proto3";
+import "gogo.proto";
+
 package balance;
 option go_package = "./pkg/pb";
 
@@ -29,7 +31,21 @@ message UpsertBalanceResponse {
   int32 current_balance = 4 ;
 }
 
+message UserBalance {
+  int32 type = 1 [(gogoproto.jsontag) = "type"];
+  int32 total = 2 [(gogoproto.jsontag) = "total"];
+}
+message GetUserBalanceRequest {
+  int32 user_id = 1;
+}
+
+message GetUserBalanceResponse {
+  int32 status = 1;
+  string error = 2;
+  repeated UserBalance balances = 3;
+}
 
 service BalanceService {
   rpc UpsertBalance(UpsertBalanceRequest) returns (UpsertBalanceResponse) {}
+  rpc GetUserBalance(GetUserBalanceRequest) returns (GetUserBalanceResponse) {}
 }

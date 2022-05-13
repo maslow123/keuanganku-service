@@ -3,7 +3,7 @@ proto:
 	protoc \
 		-I D:/me/exercise/go/pkg/mod/github.com/gogo/protobuf@v1.3.2 \
 		-I D:/me/exercise/go/pkg/mod/github.com/gogo/protobuf@v1.3.2/gogoproto \
-		-I pkg pkg/transactions/pb/*.proto --go_out=plugins=grpc:.
+		-I pkg pkg/transactions/pb/*.proto --gofast_out=plugins=grpc:.
 
 buildapigateway:
 	docker-compose build api-gateway
