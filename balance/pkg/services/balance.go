@@ -10,7 +10,6 @@ import (
 )
 
 func (s *Server) UpsertBalance(ctx context.Context, req *pb.UpsertBalanceRequest) (*pb.UpsertBalanceResponse, error) {
-	log.Println("Hit api")
 	if req.UserId == 0 {
 		return genericUpsertBalanceResponse(http.StatusBadRequest, "invalid-user-id")
 	}
@@ -54,7 +53,6 @@ func (s *Server) UpsertBalance(ctx context.Context, req *pb.UpsertBalanceRequest
 		CurrentBalance: currentBalance,
 	}
 
-	log.Println("Response: ", resp)
 	return resp, nil
 }
 
@@ -63,7 +61,6 @@ func (s *Server) GetUserBalance(ctx context.Context, req *pb.GetUserBalanceReque
 		return genericGetUserBalanceResponse(http.StatusBadRequest, "invalid-user-id")
 	}
 
-	log.Println(req.UserId)
 	q := `
 		SELECT type, total FROM balance WHERE user_id = $1
 	`
@@ -78,7 +75,6 @@ func (s *Server) GetUserBalance(ctx context.Context, req *pb.GetUserBalanceReque
 	var balances []*pb.UserBalance
 
 	for rows.Next() {
-		log.Println("Masuk")
 		var balance pb.UserBalance
 		if err := rows.Scan(
 			&balance.Type,
@@ -105,7 +101,6 @@ func (s *Server) GetUserBalance(ctx context.Context, req *pb.GetUserBalanceReque
 		return genericGetUserBalanceResponse(http.StatusNotFound, "user-balance-not-found")
 	}
 
-	log.Println(balances)
 	resp := &pb.GetUserBalanceResponse{
 		Status:   http.StatusOK,
 		Error:    "",

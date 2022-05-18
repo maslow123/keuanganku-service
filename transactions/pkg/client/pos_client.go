@@ -34,11 +34,11 @@ func (c *PosServiceClient) PosDetail(posId int32) (*pb.PosDetailResponse, error)
 	return c.Client.PosDetail(context.Background(), req)
 }
 
-func (c *PosServiceClient) UpdateTotalPosByUser(posId, amount int32) (*pb.UpdateTotalPosResponse, error) {
+func (c *PosServiceClient) UpdateTotalPosByUser(posId, amount int32, action pb.UpdateTotalPosRequest_ActionTransaction) (*pb.UpdateTotalPosResponse, error) {
 	req := &pb.UpdateTotalPosRequest{
 		Id:     posId,
 		Amount: amount,
-		Action: 0,
+		Action: action,
 	}
 
 	return c.Client.UpdateTotalPosByUser(context.Background(), req)

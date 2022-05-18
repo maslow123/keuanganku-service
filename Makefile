@@ -12,3 +12,7 @@ infratest:
 runapi:
 	docker-compose up -d --force-recreate userapi
 	docker-compose up -d --force-recreate api-gateway
+
+resetdb:
+	docker-compose down
+	make infratest

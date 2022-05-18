@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/maslow123/transactions/pkg/pb"
 	"google.golang.org/grpc"
@@ -39,8 +38,6 @@ func (c *BalanceServiceClient) UpsertBalance(userId, transactionType, action, to
 		Action: actionType,
 		Total:  total,
 	}
-
-	log.Println("Request: ", req)
 
 	return c.Client.UpsertBalance(context.Background(), req)
 }

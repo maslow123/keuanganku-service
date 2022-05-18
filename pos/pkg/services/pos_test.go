@@ -144,7 +144,7 @@ func TestPosList(t *testing.T) {
 			"Invalid Type",
 			&pb.GetPosListRequest{
 				UserId: 0,
-				Type:   2,
+				Type:   3,
 				Limit:  10,
 				Page:   1,
 			},
@@ -219,17 +219,25 @@ func TestPosList(t *testing.T) {
 	}
 }
 func TestPosDetail(t *testing.T) {
-	lastInsertedId = 1
 
 	testCases := []struct {
-		name string
-		req  *pb.PosDetailRequest
-		resp *pb.PosDetailResponse
+		name     string
+		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32
+		resp     *pb.PosDetailResponse
 	}{
 		{
 			"OK",
-			&pb.PosDetailRequest{
-				Id: int32(lastInsertedId),
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				arg := &pb.CreatePosRequest{
+					UserId: 1,
+					Name:   utils.RandomString(10),
+					Type:   0,
+					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
+				}
+				pos, err := client.CreatePos(ctx, arg)
+				require.NoError(t, err)
+
+				return pos.Id
 			},
 			&pb.PosDetailResponse{
 				Status: int32(http.StatusOK),
@@ -238,8 +246,8 @@ func TestPosDetail(t *testing.T) {
 		},
 		{
 			"Invalid Pos ID",
-			&pb.PosDetailRequest{
-				Id: int32(0),
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				return 0
 			},
 			&pb.PosDetailResponse{
 				Status: int32(http.StatusBadRequest),
@@ -248,8 +256,8 @@ func TestPosDetail(t *testing.T) {
 		},
 		{
 			"Pos Not Found",
-			&pb.PosDetailRequest{
-				Id: int32(9999),
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				return 9999
 			},
 			&pb.PosDetailResponse{
 				Status: int32(http.StatusNotFound),
@@ -268,7 +276,11 @@ func TestPosDetail(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			response, err := client.PosDetail(ctx, tc.req)
+			posId := tc.getPosID(t, ctx, client)
+			req := &pb.PosDetailRequest{
+				Id: posId,
+			}
+			response, err := client.PosDetail(ctx, req)
 			require.NoError(t, err)
 
 			require.Equal(t, tc.resp.Status, response.Status)
@@ -282,12 +294,25 @@ func TestPosDetail(t *testing.T) {
 }
 func TestUpdatePos(t *testing.T) {
 	testCases := []struct {
-		name string
-		req  *pb.UpdatePosRequest
-		resp *pb.UpdatePosResponse
+		name     string
+		getPosID func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32
+		req      *pb.UpdatePosRequest
+		resp     *pb.UpdatePosResponse
 	}{
 		{
 			"OK",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				arg := &pb.CreatePosRequest{
+					UserId: 1,
+					Name:   utils.RandomString(10),
+					Type:   0,
+					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
+				}
+				pos, err := client.CreatePos(ctx, arg)
+				require.NoError(t, err)
+
+				return pos.Id
+			},
 			&pb.UpdatePosRequest{
 				Id:    2,
 				Name:  utils.RandomString(10),
@@ -300,6 +325,9 @@ func TestUpdatePos(t *testing.T) {
 		},
 		{
 			"Invalid ID",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				return 0
+			},
 			&pb.UpdatePosRequest{
 				Id:    0,
 				Name:  utils.RandomString(10),
@@ -312,6 +340,18 @@ func TestUpdatePos(t *testing.T) {
 		},
 		{
 			"Invalid Name",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				arg := &pb.CreatePosRequest{
+					UserId: 1,
+					Name:   utils.RandomString(10),
+					Type:   0,
+					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
+				}
+				pos, err := client.CreatePos(ctx, arg)
+				require.NoError(t, err)
+
+				return pos.Id
+			},
 			&pb.UpdatePosRequest{
 				Id:    1,
 				Name:  "",
@@ -325,6 +365,18 @@ func TestUpdatePos(t *testing.T) {
 
 		{
 			"Invalid Color",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				arg := &pb.CreatePosRequest{
+					UserId: 1,
+					Name:   utils.RandomString(10),
+					Type:   0,
+					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
+				}
+				pos, err := client.CreatePos(ctx, arg)
+				require.NoError(t, err)
+
+				return pos.Id
+			},
 			&pb.UpdatePosRequest{
 				Id:    1,
 				Name:  utils.RandomString(10),
@@ -337,6 +389,9 @@ func TestUpdatePos(t *testing.T) {
 		},
 		{
 			"Not Found",
+			func(t *testing.T, ctx context.Context, client pb.PosServiceClient) int32 {
+				return 9999
+			},
 			&pb.UpdatePosRequest{
 				Id:    99999,
 				Name:  utils.RandomString(10),
@@ -359,6 +414,7 @@ func TestUpdatePos(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
+			tc.req.Id = tc.getPosID(t, ctx, client)
 			response, err := client.UpdatePosByUser(ctx, tc.req)
 			require.NoError(t, err)
 
@@ -387,10 +443,10 @@ func TestDeletePos(t *testing.T) {
 					Type:   0,
 					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
 				}
-				todo, err := client.CreatePos(ctx, arg)
+				pos, err := client.CreatePos(ctx, arg)
 				require.NoError(t, err)
 
-				return todo.Id
+				return pos.Id
 
 			},
 			&pb.DeletePosResponse{
@@ -462,11 +518,11 @@ func TestUpdateTotalPos(t *testing.T) {
 					Type:   0,
 					Color:  fmt.Sprintf("#%s", utils.RandomString(6)),
 				}
-				todo, err := client.CreatePos(ctx, arg)
+				pos, err := client.CreatePos(ctx, arg)
 				require.NoError(t, err)
 
-				lastInsertedId = todo.Id
-				return todo.Id
+				lastInsertedId = pos.Id
+				return pos.Id
 
 			},
 			pb.UpdateTotalPosRequest_INCREASE,

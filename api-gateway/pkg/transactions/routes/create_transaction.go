@@ -16,6 +16,7 @@ type CreateTransactionRequest struct {
 	Details    string `json:"details"`
 	ActionType int32  `json:"action_type"`
 	Type       int32  `json:"type"`
+	Date       int32  `json:"date"`
 }
 
 func CreateTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
@@ -34,6 +35,7 @@ func CreateTransaction(ctx *gin.Context, c pb.TransactionServiceClient) {
 		Details:    req.Details,
 		ActionType: req.ActionType,
 		Type:       req.Type,
+		Date:       req.Date,
 	}
 	log.Println(request)
 	res, err := c.CreateTransaction(context.Background(), request)

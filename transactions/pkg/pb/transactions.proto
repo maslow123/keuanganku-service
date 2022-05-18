@@ -26,6 +26,7 @@ message CreateTransactionRequest {
   string details = 4;
   int32 action_type = 5;
   int32 type = 6;
+  int32 date = 7;
 }
 
 message CreateTransactionResponse {
@@ -33,14 +34,6 @@ message CreateTransactionResponse {
   string error = 2;
   int32 id = 3;
 }
-
-// message TransactionDetailRequest { int32 id = 1; }
-
-// message TransactionDetailResponse {
-//   int32 status = 1;
-//   string error = 2;
-//   Transaction Transaction = 3;
-// }
 
 message GetTransactionListRequest {
   int32 limit = 1;
@@ -59,8 +52,19 @@ message GetTransactionListResponse {
   repeated Transaction transaction = 5;
 }
 
+message DeleteTransactionRequest {
+  int32 id = 1;
+  int32 user_id = 2;
+}
+
+message DeleteTransactionResponse {
+  int32 status = 1;
+  string error = 2;
+}
+
 service TransactionService {
   rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse) {}
   rpc GetTransactionByUser(GetTransactionListRequest) returns (GetTransactionListResponse) {}
+  rpc DeleteTransactionByUser(DeleteTransactionRequest) returns (DeleteTransactionResponse) {}
   // rpc TransactionDetail(TransactionDetailRequest) returns (TransactionDetailResponse) {}
 }

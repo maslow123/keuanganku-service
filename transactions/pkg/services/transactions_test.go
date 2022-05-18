@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"testing"
 	"time"
@@ -26,6 +25,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Dikasih ibu",
 				ActionType: 0,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusCreated),
@@ -41,6 +41,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Beli cireng",
 				ActionType: 1,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusCreated),
@@ -56,6 +57,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Beli cireng",
 				ActionType: 0,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -71,6 +73,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Beli cireng",
 				ActionType: 0,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -86,6 +89,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Beli cireng",
 				ActionType: 0,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -101,6 +105,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Beli cireng",
 				ActionType: 3,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -116,6 +121,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "",
 				ActionType: 0,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -131,6 +137,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "test",
 				ActionType: 0,
 				Type:       2,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusBadRequest),
@@ -146,6 +153,7 @@ func TestCreateTransaction(t *testing.T) {
 				Details:    "Beli cireng",
 				ActionType: 0,
 				Type:       0,
+				Date:       int32(time.Now().Unix()),
 			},
 			&pb.CreateTransactionResponse{
 				Status: int32(http.StatusNotFound),
@@ -165,7 +173,6 @@ func TestCreateTransaction(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			response, err := client.CreateTransaction(ctx, tc.req)
-			log.Println(response)
 			require.NoError(t, err)
 
 			require.Equal(t, tc.resp.Status, response.Status)
@@ -283,7 +290,6 @@ func TestGetTransactionList(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			response, err := client.GetTransactionByUser(ctx, tc.req)
-			log.Println(response)
 			require.NoError(t, err)
 
 			require.Equal(t, tc.resp.Status, response.Status)
@@ -291,6 +297,82 @@ func TestGetTransactionList(t *testing.T) {
 			if response.Status == int32(http.StatusOK) {
 				require.NotEmpty(t, response.Transaction)
 			}
+		})
+	}
+}
+
+func TestDeleteTransaction(t *testing.T) {
+	testCases := []struct {
+		name             string
+		getTransactionId func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32
+		resp             *pb.DeletePosResponse
+	}{
+		{
+			"OK",
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				arg := &pb.CreateTransactionRequest{
+					UserId:     1,
+					PosId:      1,
+					Total:      2000,
+					Details:    "Dikasih ibu",
+					ActionType: 0,
+					Type:       0,
+				}
+				tx, err := client.CreateTransaction(ctx, arg)
+				require.NoError(t, err)
+
+				return tx.Id
+
+			},
+			&pb.DeletePosResponse{
+				Status: int32(http.StatusOK),
+				Error:  "",
+			},
+		},
+		{
+			"Invalid Transaction ID",
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				return 0
+
+			},
+			&pb.DeletePosResponse{
+				Status: int32(http.StatusBadRequest),
+				Error:  "invalid-transaction-id",
+			},
+		},
+		{
+			"Transaction Not Found",
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				return 99999
+
+			},
+			&pb.DeletePosResponse{
+				Status: int32(http.StatusNotFound),
+				Error:  "transaction-not-found",
+			},
+		},
+	}
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewTransactionServiceClient(conn)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			transactionId := tc.getTransactionId(t, ctx, client)
+			req := &pb.DeleteTransactionRequest{
+				Id:     transactionId,
+				UserId: 1,
+			}
+			response, err := client.DeleteTransactionByUser(ctx, req)
+			require.NoError(t, err)
+
+			require.Equal(t, tc.resp.Status, response.Status)
+			require.Equal(t, tc.resp.Error, response.Error)
 		})
 	}
 }
