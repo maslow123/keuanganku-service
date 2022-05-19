@@ -50,6 +50,7 @@ message GetTransactionListResponse {
   int32 limit = 3;
   int32 page = 4;
   repeated Transaction transaction = 5;
+  int32 total_transaction = 6;
 }
 
 message DeleteTransactionRequest {

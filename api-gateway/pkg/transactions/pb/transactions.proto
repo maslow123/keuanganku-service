@@ -58,6 +58,7 @@ message GetTransactionListResponse {
   int32 limit = 3 [(gogoproto.jsontag) = "limit"];
   int32 page = 4 [(gogoproto.jsontag) = "page"];
   repeated Transaction transaction = 5 [(gogoproto.jsontag) = "transaction"];
+  int32 total_transaction = 6 [(gogoproto.jsontag) = "total_transaction"];
 }
 
 message DeleteTransactionRequest {

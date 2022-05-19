@@ -46,7 +46,15 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 		RETURNING id
 	`
 
-	dt := time.Unix(int64(req.Date), 0).UTC()
+	dt := time.Unix(int64(req.Date), 0)
+	currentDate := time.Now().Format("2006-01-02")
+	selectedDate := dt.Format("2006-01-02")
+
+	dt = time.Unix(int64(req.Date), 0)
+	if currentDate == selectedDate {
+		dt = time.Unix(int64(req.Date), 0).Local().UTC()
+	}
+
 	row := s.DB.QueryRowContext(ctx, q,
 		&req.UserId,
 		&req.PosId,
@@ -123,7 +131,7 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	q = fmt.Sprintf("%s AND t.created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'", q, startDate, endDate)
 
 	q = fmt.Sprintf(
-		"%s ORDER BY t.created_at DESC LIMIT $3 OFFSET $4", q,
+		"%s ORDER BY t.created_at DESC, t.details ASC LIMIT $3 OFFSET $4", q,
 	)
 
 	offset := (req.Page - 1) * req.Limit
@@ -167,17 +175,30 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	if err := rows.Err(); err != nil {
 		return genericGetTransactionListByUserResponse(http.StatusInternalServerError, err.Error())
 	}
-
 	if len(transactions) == 0 {
 		return genericGetTransactionListByUserResponse(http.StatusNotFound, "transaction-not-found")
 	}
 
+	// Get user total transaction by date
+	q = fmt.Sprintf(`
+		SELECT COALESCE(SUM(total), 0) as total_transaction FROM transactions 
+		WHERE user_id = $1 AND action = $2  AND created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'
+	`, startDate, endDate)
+	row := s.DB.QueryRowContext(ctx, q, req.UserId, req.Action)
+	var totalTransaction int32
+	errTotalTx := row.Scan(&totalTransaction)
+	if errTotalTx != nil {
+		log.Println(errTotalTx)
+		return genericGetTransactionListByUserResponse(http.StatusInternalServerError, err.Error())
+	}
+
 	resp := &pb.GetTransactionListResponse{
-		Status:      http.StatusOK,
-		Error:       "",
-		Limit:       req.Limit,
-		Page:        req.Page,
-		Transaction: transactions,
+		Status:           http.StatusOK,
+		Error:            "",
+		Limit:            req.Limit,
+		Page:             req.Page,
+		Transaction:      transactions,
+		TotalTransaction: totalTransaction,
 	}
 
 	return resp, nil
