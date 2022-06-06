@@ -301,6 +301,103 @@ func TestGetTransactionList(t *testing.T) {
 	}
 }
 
+func TestDetailTransaction(t *testing.T) {
+	testCases := []struct {
+		name             string
+		userId           int32
+		getTransactionId func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32
+		resp             *pb.DetailTransactionResponse
+	}{
+		{
+			"OK",
+			1,
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				arg := &pb.CreateTransactionRequest{
+					UserId:     1,
+					PosId:      1,
+					Total:      2000,
+					Details:    "Test Detail Transaction",
+					ActionType: 0,
+					Type:       0,
+				}
+				tx, err := client.CreateTransaction(ctx, arg)
+				require.NoError(t, err)
+
+				return tx.Id
+
+			},
+			&pb.DetailTransactionResponse{
+				Status: int32(http.StatusOK),
+				Error:  "",
+				Transaction: &pb.Transaction{
+					Details: "Test Detail Transaction",
+				},
+			},
+		},
+		{
+			"Invalid User ID",
+			0,
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				return 1
+
+			},
+			&pb.DetailTransactionResponse{
+				Status:      int32(http.StatusBadRequest),
+				Error:       "invalid-user-id",
+				Transaction: &pb.Transaction{},
+			},
+		},
+		{
+			"Invalid Transaction ID",
+			1,
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				return 0
+
+			},
+			&pb.DetailTransactionResponse{
+				Status:      int32(http.StatusBadRequest),
+				Error:       "invalid-transaction-id",
+				Transaction: &pb.Transaction{},
+			},
+		},
+		{
+			"Transaction Not Found",
+			1,
+			func(t *testing.T, ctx context.Context, client pb.TransactionServiceClient) int32 {
+				return 99999
+
+			},
+			&pb.DetailTransactionResponse{
+				Status:      int32(http.StatusNotFound),
+				Error:       "transaction-not-found",
+				Transaction: &pb.Transaction{},
+			},
+		},
+	}
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewTransactionServiceClient(conn)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			transactionId := tc.getTransactionId(t, ctx, client)
+			req := &pb.DetailTransactionRequest{
+				Id:     transactionId,
+				UserId: tc.userId,
+			}
+			response, err := client.DetailTransaction(ctx, req)
+			require.NoError(t, err)
+
+			require.Equal(t, tc.resp.Status, response.Status)
+			require.Equal(t, tc.resp.Error, response.Error)
+		})
+	}
+}
 func TestDeleteTransaction(t *testing.T) {
 	testCases := []struct {
 		name             string

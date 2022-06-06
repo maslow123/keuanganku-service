@@ -16,6 +16,13 @@ func genericGetTransactionListByUserResponse(statusCode int, errorMessage string
 	}, nil
 }
 
+func genericDetailTransactionResponse(statusCode int, errorMessage string) (*pb.DetailTransactionResponse, error) {
+	return &pb.DetailTransactionResponse{
+		Status: int32(statusCode),
+		Error:  errorMessage,
+	}, nil
+}
+
 func genericDeleteTransactionResponse(statusCode int, errorMessage string) (*pb.DeleteTransactionResponse, error) {
 	return &pb.DeleteTransactionResponse{
 		Status: int32(statusCode),

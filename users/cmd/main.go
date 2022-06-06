@@ -32,7 +32,7 @@ func main() {
 	jwt := utils.JwtWrapper{
 		SecretKey:       c.JWTSecretKey,
 		Issuer:          "user-service",
-		ExpirationHours: 24 * 365,
+		ExpirationHours: 24 * 1,
 	}
 
 	listen, err := net.Listen("tcp", c.Port)

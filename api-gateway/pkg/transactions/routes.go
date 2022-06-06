@@ -20,6 +20,7 @@ func RegisterRoutes(r *gin.Engine, c *config.Config, userSvc *users.ServiceClien
 	routes.Use(a.AuthRequired)
 	routes.POST("/create", svc.CreateTransaction)
 	routes.GET("/list", svc.GetUserTransaction)
+	routes.GET("/detail/:id", svc.DetailUserTransaction)
 	routes.DELETE("/:id", svc.DeleteTransactionByUser)
 
 	return svc
@@ -31,6 +32,10 @@ func (svc *ServiceClient) CreateTransaction(ctx *gin.Context) {
 
 func (svc *ServiceClient) GetUserTransaction(ctx *gin.Context) {
 	routes.GetUserTransaction(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) DetailUserTransaction(ctx *gin.Context) {
+	routes.DetailUserTransaction(ctx, svc.Client)
 }
 
 func (svc *ServiceClient) DeleteTransactionByUser(ctx *gin.Context) {

@@ -121,6 +121,64 @@ func TestGetUserTransaction(t *testing.T) {
 	}
 }
 
+func TestDetailUserTransaction(t *testing.T) {
+	testCases := []struct {
+		name             string
+		getTransactionId func(t *testing.T, server *ServiceClient, authorizationHeader string) int32
+		checkResponse    func(recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			getTransactionId: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
+				return createRandomTransaction(t, server, authorizationHeader)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+		{
+			name: "Invalid Transaction ID",
+			getTransactionId: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
+				return 0
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "Transaction Not Found",
+			getTransactionId: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
+				return 999999
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusNotFound, recorder.Code)
+			},
+		},
+	}
+
+	// set authorizationHeader
+	server := NewServer(t)
+	authorizationHeader := addAuthorization(t, server)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			server = NewServer(t)
+			recorder := httptest.NewRecorder()
+
+			id := tc.getTransactionId(t, server, authorizationHeader)
+			url := fmt.Sprintf("/transactions/detail/%d", id)
+			request, err := http.NewRequest(http.MethodGet, url, nil)
+			require.NoError(t, err)
+
+			request.Header.Set("Authorization", authorizationHeader)
+			server.Router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}
+
 func TestDeleteTransaction(t *testing.T) {
 	testCases := []struct {
 		name             string

@@ -204,6 +204,61 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	return resp, nil
 }
 
+func (s *Server) DetailTransaction(ctx context.Context, req *pb.DetailTransactionRequest) (*pb.DetailTransactionResponse, error) {
+	if req.UserId == 0 {
+		return genericDetailTransactionResponse(http.StatusBadRequest, "invalid-user-id")
+	}
+	if req.Id == 0 {
+		return genericDetailTransactionResponse(http.StatusBadRequest, "invalid-transaction-id")
+	}
+
+	q := `
+		SELECT 
+			t.id, t.total, t.details, t.type, t.created_at,
+			p."name" pos_name, p.type pos_type, p.total pos_total, p.color pos_color
+		FROM transactions t
+		LEFT JOIN pos p ON p.id = t.pos_id
+		LEFT JOIN users u ON u.id = t.user_id
+		WHERE u.id = $1 AND t.id = $2		
+	`
+	var transaction pb.Transaction
+	var pos pb.Pos
+	var createdAt time.Time
+
+	row := s.DB.QueryRowContext(ctx, q, req.UserId, req.Id)
+	err := row.Scan(
+		&transaction.Id,
+		&transaction.Total,
+		&transaction.Details,
+		&transaction.Type,
+		&createdAt,
+		&pos.Name,
+		&pos.Type,
+		&pos.Total,
+		&pos.Color,
+	)
+
+	if err != nil {
+		log.Println(err)
+		if err == sql.ErrNoRows {
+			return genericDetailTransactionResponse(http.StatusNotFound, "transaction-not-found")
+		}
+		return genericDetailTransactionResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	transaction.Pos = &pos
+
+	resp := &pb.DetailTransactionResponse{
+		Status:      http.StatusOK,
+		Error:       "",
+		Transaction: &transaction,
+	}
+
+	log.Println(resp)
+
+	return resp, nil
+}
+
 func (s *Server) DeleteTransactionByUser(ctx context.Context, req *pb.DeleteTransactionRequest) (*pb.DeleteTransactionResponse, error) {
 	if req.Id == 0 {
 		return genericDeleteTransactionResponse(http.StatusBadRequest, "invalid-transaction-id")

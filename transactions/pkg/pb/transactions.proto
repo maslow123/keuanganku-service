@@ -63,9 +63,20 @@ message DeleteTransactionResponse {
   string error = 2;
 }
 
+message DetailTransactionRequest {
+  int32 id = 1;
+  int32 user_id = 2;
+}
+
+message DetailTransactionResponse {
+  int32 status = 1;
+  string error = 2;
+  Transaction transaction = 3;
+}
+
 service TransactionService {
   rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse) {}
   rpc GetTransactionByUser(GetTransactionListRequest) returns (GetTransactionListResponse) {}
   rpc DeleteTransactionByUser(DeleteTransactionRequest) returns (DeleteTransactionResponse) {}
-  // rpc TransactionDetail(TransactionDetailRequest) returns (TransactionDetailResponse) {}
+  rpc DetailTransaction(DetailTransactionRequest) returns (DetailTransactionResponse) {}
 }
