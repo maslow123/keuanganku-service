@@ -246,6 +246,7 @@ func (s *Server) DetailTransaction(ctx context.Context, req *pb.DetailTransactio
 		return genericDetailTransactionResponse(http.StatusInternalServerError, err.Error())
 	}
 
+	transaction.CreatedAt = int32(createdAt.Unix())
 	transaction.Pos = &pos
 
 	resp := &pb.DetailTransactionResponse{
