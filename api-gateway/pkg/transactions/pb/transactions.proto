@@ -35,14 +35,6 @@ message CreateTransactionResponse {
   int32 id = 3;
 }
 
-// message TransactionDetailRequest { int32 id = 1; }
-
-// message TransactionDetailResponse {
-//   int32 status = 1;
-//   string error = 2;
-//   Transaction Transaction = 3;
-// }
-
 message GetTransactionListRequest {
   int32 limit = 1;
   int32 page = 2;

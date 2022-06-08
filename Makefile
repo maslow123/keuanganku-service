@@ -6,7 +6,7 @@ pull_api:
 infratest: 
 	docker-compose up -d --force-recreate testdb
 	echo Starting for db...
-	# sleep 15
+	sleep 15
 	docker-compose up migratedb
 
 runapi:

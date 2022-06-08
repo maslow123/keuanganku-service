@@ -15,3 +15,10 @@ func genericLoginResponse(statusCode int, errorMessage string) (*pb.LoginRespons
 		Error:  errorMessage,
 	}, nil
 }
+
+func genericUpdateProfileResponse(statusCode int, errorMessage string) (*pb.UpdateProfileResponse, error) {
+	return &pb.UpdateProfileResponse{
+		Status: int32(statusCode),
+		Error:  errorMessage,
+	}, nil
+}

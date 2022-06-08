@@ -127,3 +127,32 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 		UserId: claims.UserId,
 	}, nil
 }
+
+func (s *Server) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest) (*pb.UpdateProfileResponse, error) {
+	if req.Id == 0 {
+		return genericUpdateProfileResponse(http.StatusBadRequest, "invalid-user-id")
+	}
+	if req.Name == "" {
+		return genericUpdateProfileResponse(http.StatusBadRequest, "invalid-name")
+	}
+	if req.Email == "" {
+		return genericUpdateProfileResponse(http.StatusBadRequest, "invalid-email")
+	}
+
+	q := `
+		UPDATE users SET email = $2, name = $3
+		WHERE id = $1
+	`
+
+	res, err := s.DB.ExecContext(ctx, q, req.Id, req.Email, req.Name)
+	if err != nil {
+		log.Println(err)
+		return genericUpdateProfileResponse(http.StatusInternalServerError, err.Error())
+	}
+	count, err := res.RowsAffected()
+	if err == nil && count == 0 {
+		return genericUpdateProfileResponse(http.StatusNotFound, "user-not-found")
+	}
+
+	return genericUpdateProfileResponse(http.StatusOK, "")
+}

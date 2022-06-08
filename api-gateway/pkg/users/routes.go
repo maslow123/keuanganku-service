@@ -19,6 +19,9 @@ func RegisterRoutes(r *gin.Engine, c *config.Config) *ServiceClient {
 	routes.POST("/register", svc.Register)
 	routes.POST("/login", svc.Login)
 
+	routes.Use(a.AuthRequired)
+	routes.PUT("/update", svc.UpdateProfile)
+
 	return svc
 }
 
@@ -28,4 +31,8 @@ func (svc *ServiceClient) Register(ctx *gin.Context) {
 
 func (svc *ServiceClient) Login(ctx *gin.Context) {
 	routes.Login(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) UpdateProfile(ctx *gin.Context) {
+	routes.UpdateProfile(ctx, svc.Client)
 }

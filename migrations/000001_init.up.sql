@@ -38,4 +38,5 @@ CREATE INDEX ON "pos" ("user_id");
 
 INSERT INTO users (name, email, password) 
 VALUES
-('user 1', 'user1@gmail.com', '$2a$05$wQ8lYAdEw7ZzF3OSzWeCKee8wc0KWxbBqfJpNu.lb.f1rvuSyy/I2');
+('user 1', 'user1@gmail.com', '$2a$05$wQ8lYAdEw7ZzF3OSzWeCKee8wc0KWxbBqfJpNu.lb.f1rvuSyy/I2'),
+('user 2', 'user2@gmail.com', '$2a$05$wQ8lYAdEw7ZzF3OSzWeCKee8wc0KWxbBqfJpNu.lb.f1rvuSyy/I2');

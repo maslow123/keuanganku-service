@@ -223,3 +223,90 @@ func TestLogin(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateProfile(t *testing.T) {
+	testCases := []struct {
+		name string
+		req  *pb.UpdateProfileRequest
+		resp *pb.UpdateProfileResponse
+	}{
+		{
+			"OK",
+			&pb.UpdateProfileRequest{
+				Id:    2,
+				Name:  "User Updated",
+				Email: "user2@gmail.com",
+			},
+			&pb.UpdateProfileResponse{
+				Status: http.StatusOK,
+				Error:  "",
+			},
+		},
+		{
+			"Invalid User ID",
+			&pb.UpdateProfileRequest{
+				Id:    0,
+				Name:  "User Updated",
+				Email: "user2@gmail.com",
+			},
+			&pb.UpdateProfileResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-user-id",
+			},
+		},
+		{
+			"Invalid Name",
+			&pb.UpdateProfileRequest{
+				Id:    1,
+				Name:  "",
+				Email: "user2@gmail.com",
+			},
+			&pb.UpdateProfileResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-name",
+			},
+		},
+		{
+			"Invalid Email",
+			&pb.UpdateProfileRequest{
+				Id:    1,
+				Name:  "User Updated",
+				Email: "",
+			},
+			&pb.UpdateProfileResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-email",
+			},
+		},
+		{
+			"Invalid User Not Found",
+			&pb.UpdateProfileRequest{
+				Id:    9999,
+				Name:  "User Updated",
+				Email: "user2@gmail.com",
+			},
+			&pb.UpdateProfileResponse{
+				Status: http.StatusNotFound,
+				Error:  "user-not-found",
+			},
+		},
+	}
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewUserServiceClient(conn)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			response, err := client.UpdateProfile(ctx, tc.req)
+			require.NoError(t, err)
+
+			require.Equal(t, tc.resp.Status, response.Status)
+			require.Equal(t, tc.resp.Error, response.Error)
+		})
+	}
+}

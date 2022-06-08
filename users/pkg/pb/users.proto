@@ -3,12 +3,6 @@ package users;
 
 option go_package = "./pkg/pb";
 
-service UserService {
-  rpc Register(RegisterRequest) returns (RegisterResponse) {}
-  rpc Login(LoginRequest) returns (LoginResponse) {}
-  rpc Validate(ValidateRequest) returns (ValidateResponse) {}
-}
-
 message User {
   int32 id = 1;
   string name = 2;
@@ -48,4 +42,23 @@ message ValidateResponse {
   int32 status = 1;
   string error = 2;
   int32 user_id = 3;
+}
+
+// Edit profile
+message UpdateProfileRequest {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message UpdateProfileResponse {
+  int32 status = 1;
+  string error = 2;
+}
+
+service UserService {
+  rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+  rpc Validate(ValidateRequest) returns (ValidateResponse) {}
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {}
 }
