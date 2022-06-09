@@ -109,7 +109,7 @@ func TestPostList(t *testing.T) {
 		},
 		{
 			name:  "Invalid Type",
-			query: "page=1&limit=10&type=2",
+			query: "page=1&limit=10&type=9999",
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
