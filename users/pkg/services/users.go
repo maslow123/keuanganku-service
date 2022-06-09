@@ -41,12 +41,20 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		return genericRegisterResponse(http.StatusBadRequest, "email-already-exists")
 	}
 
+	// Start transaction
+	tx, err := s.DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Println(err)
+		return genericRegisterResponse(http.StatusBadRequest, err.Error())
+	}
+	defer tx.Rollback()
+
 	q = `
 		INSERT INTO users (name, email, password)
 		VALUES ($1, $2, $3)
 		RETURNING id;
 	`
-	row = s.DB.QueryRowContext(ctx, q,
+	row = tx.QueryRowContext(ctx, q,
 		&req.Name,
 		&req.Email,
 		&hashedPassword,
@@ -54,9 +62,25 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 
 	var lastInsertedId int32
 
-	err := row.Scan(&lastInsertedId)
+	err = row.Scan(&lastInsertedId)
 	if err != nil {
 		log.Println(err)
+		return genericRegisterResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	// create new balance
+	transactionTypes := []int{0, 1} // 0: Cash, 1: Transfer
+
+	for txType := range transactionTypes {
+		_, err = s.BalanceService.UpsertBalance(lastInsertedId, int32(txType), 0, 0)
+		if err != nil {
+			log.Println(err)
+			return genericRegisterResponse(http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
 		return genericRegisterResponse(http.StatusInternalServerError, err.Error())
 	}
 

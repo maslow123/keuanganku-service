@@ -9,6 +9,7 @@ import (
 	"os/signal"
 
 	_ "github.com/lib/pq"
+	"github.com/maslow123/users/pkg/client"
 	"github.com/maslow123/users/pkg/config"
 	"github.com/maslow123/users/pkg/pb"
 	"github.com/maslow123/users/pkg/services"
@@ -40,10 +41,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	balanceService := client.InitBalanceServiceClient(c.BalanceServiceUrl)
 	opts := []grpc.ServerOption{}
 	api := services.Server{
-		DB:  db,
-		Jwt: jwt,
+		DB:             db,
+		Jwt:            jwt,
+		BalanceService: balanceService,
 	}
 	server := grpc.NewServer(opts...)
 	pb.RegisterUserServiceServer(server, &api)

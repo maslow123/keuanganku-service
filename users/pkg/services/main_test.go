@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
+
+	"github.com/maslow123/users/pkg/client"
 )
 
 func dialer(t *testing.T) func(context.Context, string) (net.Conn, error) {
@@ -33,9 +35,11 @@ func dialer(t *testing.T) func(context.Context, string) (net.Conn, error) {
 		require.NoError(t, err)
 	}
 
+	balanceService := client.InitBalanceServiceClient(c.BalanceServiceUrl)
 	s := Server{
-		DB:  db,
-		Jwt: jwt,
+		DB:             db,
+		Jwt:            jwt,
+		BalanceService: balanceService,
 	}
 
 	server := grpc.NewServer()
