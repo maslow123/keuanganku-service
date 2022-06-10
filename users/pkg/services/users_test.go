@@ -310,3 +310,134 @@ func TestUpdateProfile(t *testing.T) {
 		})
 	}
 }
+
+func TestChangePassword(t *testing.T) {
+	testCases := []struct {
+		name string
+		req  *pb.ChangePasswordRequest
+		resp *pb.ChangePasswordResponse
+	}{
+		{
+			"OK",
+			&pb.ChangePasswordRequest{
+				Id:              1,
+				OldPassword:     "111111",
+				Password:        "111111",
+				ConfirmPassword: "111111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusOK,
+				Error:  "",
+			},
+		},
+		{
+			"Invalid User ID",
+			&pb.ChangePasswordRequest{
+				Id:              0,
+				OldPassword:     "111111",
+				Password:        "111111",
+				ConfirmPassword: "111111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-user-id",
+			},
+		},
+		{
+			"Invalid Old Password",
+			&pb.ChangePasswordRequest{
+				Id:              1,
+				OldPassword:     "",
+				Password:        "111111",
+				ConfirmPassword: "111111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-old-password",
+			},
+		},
+		{
+			"Invalid Password",
+			&pb.ChangePasswordRequest{
+				Id:              1,
+				OldPassword:     "111111",
+				Password:        "",
+				ConfirmPassword: "111111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-password",
+			},
+		},
+		{
+			"Invalid Confirm Password",
+			&pb.ChangePasswordRequest{
+				Id:              1,
+				OldPassword:     "111111",
+				Password:        "111111",
+				ConfirmPassword: "",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusBadRequest,
+				Error:  "invalid-confirm-password",
+			},
+		},
+		{
+			"Password doesnt match with confirm password",
+			&pb.ChangePasswordRequest{
+				Id:              1,
+				OldPassword:     "111111",
+				Password:        "111111",
+				ConfirmPassword: "11111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusBadRequest,
+				Error:  "password-does'nt-match-with-confirm-password",
+			},
+		},
+		{
+			"User not found",
+			&pb.ChangePasswordRequest{
+				Id:              9999,
+				OldPassword:     "111111",
+				Password:        "111111",
+				ConfirmPassword: "111111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusNotFound,
+				Error:  "user-not-found",
+			},
+		},
+		{
+			"Password doesnt match",
+			&pb.ChangePasswordRequest{
+				Id:              1,
+				OldPassword:     "wrong password",
+				Password:        "111111",
+				ConfirmPassword: "111111",
+			},
+			&pb.ChangePasswordResponse{
+				Status: http.StatusBadRequest,
+				Error:  "password-not-match",
+			},
+		},
+	}
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewUserServiceClient(conn)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			response, err := client.ChangePassword(ctx, tc.req)
+			require.NoError(t, err)
+
+			require.Equal(t, tc.resp.Status, response.Status)
+			require.Equal(t, tc.resp.Error, response.Error)
+		})
+	}
+}

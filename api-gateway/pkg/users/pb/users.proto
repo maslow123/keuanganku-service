@@ -56,9 +56,23 @@ message UpdateProfileResponse {
   string error = 2;
 }
 
+// Change password
+message ChangePasswordRequest {
+  int32 id = 1;
+  string old_password = 2;
+  string password = 3;
+  string confirm_password = 4;
+}
+
+message ChangePasswordResponse {
+  int32 status = 1;
+  string error = 2;
+}
+
 service UserService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc Validate(ValidateRequest) returns (ValidateResponse) {}
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {}
 }

@@ -21,6 +21,7 @@ func RegisterRoutes(r *gin.Engine, c *config.Config) *ServiceClient {
 
 	routes.Use(a.AuthRequired)
 	routes.PUT("/update", svc.UpdateProfile)
+	routes.PUT("/change-password", svc.ChangePassword)
 
 	return svc
 }
@@ -35,4 +36,8 @@ func (svc *ServiceClient) Login(ctx *gin.Context) {
 
 func (svc *ServiceClient) UpdateProfile(ctx *gin.Context) {
 	routes.UpdateProfile(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) ChangePassword(ctx *gin.Context) {
+	routes.ChangePassword(ctx, svc.Client)
 }

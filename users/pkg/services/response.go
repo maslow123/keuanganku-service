@@ -22,3 +22,10 @@ func genericUpdateProfileResponse(statusCode int, errorMessage string) (*pb.Upda
 		Error:  errorMessage,
 	}, nil
 }
+
+func genericChangePasswordResponse(statusCode int, errorMessage string) (*pb.ChangePasswordResponse, error) {
+	return &pb.ChangePasswordResponse{
+		Status: int32(statusCode),
+		Error:  errorMessage,
+	}, nil
+}

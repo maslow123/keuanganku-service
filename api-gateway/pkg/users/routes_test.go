@@ -246,3 +246,48 @@ func TestUpdateProfile(t *testing.T) {
 		})
 	}
 }
+
+func TestChangePassword(t *testing.T) {
+	testCases := []struct {
+		name          string
+		body          gin.H
+		checkResponse func(recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			body: gin.H{
+				"old_password":     "111111",
+				"password":         "111111",
+				"confirm_password": "111111",
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				log.Println(recorder)
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+	}
+
+	// set authorizationHeader
+	server := NewServer(t)
+	authorizationHeader := addAuthorization(t, server)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			server := NewServer(t)
+			recorder := httptest.NewRecorder()
+
+			data, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+
+			url := "/users/change-password"
+			request, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
+			require.NoError(t, err)
+
+			request.Header.Set("Authorization", authorizationHeader)
+			server.Router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}

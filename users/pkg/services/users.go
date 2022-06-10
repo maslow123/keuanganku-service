@@ -180,3 +180,53 @@ func (s *Server) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest
 
 	return genericUpdateProfileResponse(http.StatusOK, "")
 }
+
+func (s *Server) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
+	if req.Id == 0 {
+		return genericChangePasswordResponse(http.StatusBadRequest, "invalid-user-id")
+	}
+	if req.OldPassword == "" {
+		return genericChangePasswordResponse(http.StatusBadRequest, "invalid-old-password")
+	}
+	if req.Password == "" {
+		return genericChangePasswordResponse(http.StatusBadRequest, "invalid-password")
+	}
+	if req.ConfirmPassword == "" {
+		return genericChangePasswordResponse(http.StatusBadRequest, "invalid-confirm-password")
+	}
+	if req.Password != req.ConfirmPassword {
+		return genericChangePasswordResponse(http.StatusBadRequest, "password-does'nt-match-with-confirm-password")
+	}
+
+	var userPass string
+	// get user by ud
+	q := `SELECT password FROM users WHERE id = $1`
+
+	row := s.DB.QueryRowContext(ctx, q, req.Id)
+	err := row.Scan(&userPass)
+	if err != nil {
+		log.Println(err)
+		if err == sql.ErrNoRows {
+			return genericChangePasswordResponse(http.StatusNotFound, "user-not-found")
+		}
+		return genericChangePasswordResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	// check old password is match or not
+	match := utils.CheckPasswordHash(req.OldPassword, userPass)
+	if !match {
+		return genericChangePasswordResponse(http.StatusBadRequest, "password-not-match")
+	}
+
+	// update password
+	hashedPassword := utils.HashPassword(req.Password)
+	q = `UPDATE users SET password = $2 WHERE id = $1`
+
+	_, err = s.DB.ExecContext(ctx, q, req.Id, hashedPassword)
+	if err != nil {
+		log.Println(err)
+		return genericChangePasswordResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	return genericChangePasswordResponse(http.StatusOK, "")
+}
