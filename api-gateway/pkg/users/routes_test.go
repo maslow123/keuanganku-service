@@ -3,9 +3,12 @@ package users
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -290,4 +293,37 @@ func TestChangePassword(t *testing.T) {
 			tc.checkResponse(recorder)
 		})
 	}
+}
+
+func TestUploadImage(t *testing.T) {
+
+	server := NewServer(t)
+	authorizationHeader := addAuthorization(t, server)
+
+	filePath := "./images/avatar.jpg"
+	fieldName := "file"
+	body := new(bytes.Buffer)
+
+	mw := multipart.NewWriter(body)
+
+	file, err := os.Open(filePath)
+	require.NoError(t, err)
+	defer file.Close()
+
+	w, err := mw.CreateFormFile(fieldName, filePath)
+	require.NoError(t, err)
+
+	_, err = io.Copy(w, file)
+	require.NoError(t, err)
+
+	mw.Close()
+
+	req := httptest.NewRequest(http.MethodPost, "/users/upload", body)
+	req.Header.Add("Content-Type", mw.FormDataContentType())
+	req.Header.Set("Authorization", authorizationHeader)
+
+	res := httptest.NewRecorder()
+	server.Router.ServeHTTP(res, req)
+
+	require.Equal(t, http.StatusOK, res.Code)
 }

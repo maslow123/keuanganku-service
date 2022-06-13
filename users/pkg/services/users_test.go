@@ -461,6 +461,7 @@ func TestUploadImage(t *testing.T) {
 	conn := checkConnection(ctx, t)
 	defer conn.Close()
 
+	// Hit to gRPC...
 	client := pb.NewUserServiceClient(conn)
 	stream, err := client.UploadImage(ctx)
 
@@ -468,7 +469,7 @@ func TestUploadImage(t *testing.T) {
 	req := &pb.UploadImageRequest{
 		Data: &pb.UploadImageRequest_Info{
 			Info: &pb.ImageInfo{
-				UserId:    "1",
+				UserId:    1,
 				ImageType: imageType,
 			},
 		},

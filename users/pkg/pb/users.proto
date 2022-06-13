@@ -78,7 +78,7 @@ message UploadImageRequest {
 }
 
 message ImageInfo {
-  string user_id = 1;
+  int32 user_id = 1;
   string image_type = 2;
 }
 

@@ -233,8 +233,8 @@ func (s *Server) ChangePassword(ctx context.Context, req *pb.ChangePasswordReque
 	return genericChangePasswordResponse(http.StatusOK, "")
 }
 
-const maxImageSize = 1 << 20 // 2^20 bytes (1MB)
 func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
+	const maxImageSize = 1 << 20 // 2^20 bytes (1MB)
 	req, err := stream.Recv()
 	if err != nil {
 		log.Println("Cannot receive image info")
@@ -243,11 +243,10 @@ func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
 
 	userID := req.GetInfo().GetUserId()
 	imageType := req.GetInfo().GetImageType()
-	log.Printf("receive an upload-image request for user %s with image type %s", userID, imageType)
+	log.Printf("receive an upload-image request for user %d with image type %s", userID, imageType)
 
 	// check user id image already exists or no
-	// user ,err := s.
-	// end
+	// Soon ....
 
 	imageData := bytes.Buffer{}
 	imageSize := 0
