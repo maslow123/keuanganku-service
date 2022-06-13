@@ -57,7 +57,6 @@ message UpdateProfileResponse {
 }
 
 // Change password
-
 message ChangePasswordRequest {
   int32 id = 1;
   string old_password = 2;
@@ -70,6 +69,24 @@ message ChangePasswordResponse {
   string error = 2;
 }
 
+// UploadImageRequest
+message UploadImageRequest {
+  oneof data {
+    ImageInfo info = 1;
+    bytes chunk_data = 2;
+  }
+}
+
+message ImageInfo {
+  string user_id = 1;
+  string image_type = 2;
+}
+
+message UploadImageResponse {
+  string id = 1;
+  uint32 size = 2;
+}
+
 
 service UserService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
@@ -77,4 +94,5 @@ service UserService {
   rpc Validate(ValidateRequest) returns (ValidateResponse) {}
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {}
   rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {}
+  rpc UploadImage(stream UploadImageRequest) returns (UploadImageResponse) {}
 }

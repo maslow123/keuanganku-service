@@ -43,11 +43,15 @@ func main() {
 
 	balanceService := client.InitBalanceServiceClient(c.BalanceServiceUrl)
 	opts := []grpc.ServerOption{}
+	imageStore := services.NewDiskImageStore("img")
+
 	api := services.Server{
 		DB:             db,
 		Jwt:            jwt,
 		BalanceService: balanceService,
+		ImageStore:     imageStore,
 	}
+
 	server := grpc.NewServer(opts...)
 	pb.RegisterUserServiceServer(server, &api)
 

@@ -1,9 +1,14 @@
 package services
 
 import (
+	"bufio"
 	"context"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/maslow123/users/pkg/pb"
@@ -440,4 +445,76 @@ func TestChangePassword(t *testing.T) {
 			require.Equal(t, tc.resp.Error, response.Error)
 		})
 	}
+}
+
+func TestUploadImage(t *testing.T) {
+	t.Parallel()
+
+	testImageFolder := "../tmp"
+
+	imagePath := fmt.Sprintf("%s/avatar.jpg", testImageFolder)
+	file, err := os.Open(imagePath)
+	require.NoError(t, err)
+	defer file.Close()
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewUserServiceClient(conn)
+	stream, err := client.UploadImage(ctx)
+
+	imageType := filepath.Ext(imagePath)
+	req := &pb.UploadImageRequest{
+		Data: &pb.UploadImageRequest_Info{
+			Info: &pb.ImageInfo{
+				UserId:    "1",
+				ImageType: imageType,
+			},
+		},
+	}
+
+	err = stream.Send(req)
+	require.NoError(t, err)
+
+	reader := bufio.NewReader(file)
+	buffer := make([]byte, 1024)
+	size := 0
+
+	for {
+		n, err := reader.Read(buffer)
+		if err == io.EOF {
+			break
+		}
+
+		require.NoError(t, err)
+		size += n
+		req := &pb.UploadImageRequest{
+			Data: &pb.UploadImageRequest_ChunkData{
+				ChunkData: buffer[:n],
+			},
+		}
+
+		err = stream.Send(req)
+		require.NoError(t, err)
+	}
+
+	res, err := stream.CloseAndRecv()
+	require.NoError(t, err)
+	require.NotZero(t, res.GetId())
+	require.EqualValues(t, size, res.GetSize())
+
+	savedImagePath := fmt.Sprintf("%s/%s%s", testImageFolder, res.GetId(), imageType)
+	require.FileExists(t, savedImagePath)
+
+	file, err = os.Open(savedImagePath)
+	require.NoError(t, err)
+
+	err = file.Close()
+	require.NoError(t, err)
+
+	// Comments for windows only
+	// err = os.Remove(savedImagePath)
+	// require.NoError(t, err)
+
 }

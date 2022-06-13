@@ -1,8 +1,10 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"io"
 	"log"
 	"net/http"
 
@@ -229,4 +231,72 @@ func (s *Server) ChangePassword(ctx context.Context, req *pb.ChangePasswordReque
 	}
 
 	return genericChangePasswordResponse(http.StatusOK, "")
+}
+
+const maxImageSize = 1 << 20 // 2^20 bytes (1MB)
+func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		log.Println("Cannot receive image info")
+		return err
+	}
+
+	userID := req.GetInfo().GetUserId()
+	imageType := req.GetInfo().GetImageType()
+	log.Printf("receive an upload-image request for user %s with image type %s", userID, imageType)
+
+	// check user id image already exists or no
+	// user ,err := s.
+	// end
+
+	imageData := bytes.Buffer{}
+	imageSize := 0
+
+	for {
+		log.Print("Waiting to receive more data...")
+		req, err := stream.Recv()
+		if err == io.EOF {
+			log.Print("No more data...")
+			break
+		}
+		if err != nil {
+			log.Println("Cannot receive chunk data: ", err)
+			return err
+		}
+
+		chunk := req.GetChunkData()
+		size := len(chunk)
+
+		log.Printf("Received a chunk with size: %d", size)
+		imageSize += size
+
+		if imageSize > maxImageSize {
+			log.Printf("Image is too large: %d > %d", imageSize, maxImageSize)
+		}
+		_, err = imageData.Write(chunk)
+		if err != nil {
+			log.Println("Cannot write chunk data: ", err)
+			return err
+		}
+	}
+
+	imageID, err := s.ImageStore.Save(userID, imageType, imageData)
+	if err != nil {
+		log.Println("Cannot save image to the store: ", err)
+	}
+
+	res := &pb.UploadImageResponse{
+		Id:   imageID,
+		Size: uint32(imageSize),
+	}
+
+	err = stream.SendAndClose(res)
+	if err != nil {
+		log.Println("Cannot send response")
+		return err
+	}
+
+	log.Printf("saved image with id: %s, size: %d", imageID, imageSize)
+
+	return nil
 }

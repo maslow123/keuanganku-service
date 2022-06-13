@@ -36,10 +36,12 @@ func dialer(t *testing.T) func(context.Context, string) (net.Conn, error) {
 	}
 
 	balanceService := client.InitBalanceServiceClient(c.BalanceServiceUrl)
+	imageStore := NewDiskImageStore("../tmp")
 	s := Server{
 		DB:             db,
 		Jwt:            jwt,
 		BalanceService: balanceService,
+		ImageStore:     imageStore,
 	}
 
 	server := grpc.NewServer()
