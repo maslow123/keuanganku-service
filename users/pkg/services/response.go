@@ -1,6 +1,10 @@
 package services
 
-import "github.com/maslow123/users/pkg/pb"
+import (
+	"errors"
+
+	"github.com/maslow123/users/pkg/pb"
+)
 
 func genericRegisterResponse(statusCode int, errorMessage string) (*pb.RegisterResponse, error) {
 	return &pb.RegisterResponse{
@@ -28,4 +32,8 @@ func genericChangePasswordResponse(statusCode int, errorMessage string) (*pb.Cha
 		Status: int32(statusCode),
 		Error:  errorMessage,
 	}, nil
+}
+
+func genericUploadImageResponse(errorMessage string) error {
+	return errors.New(errorMessage)
 }

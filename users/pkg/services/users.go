@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/maslow123/users/pkg/pb"
 	"github.com/maslow123/users/pkg/utils"
@@ -246,7 +248,22 @@ func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
 	log.Printf("receive an upload-image request for user %d with image type %s", userID, imageType)
 
 	// check user id image already exists or no
-	// Soon ....
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	q := `SELECT COUNT(1) as count FROM users WHERE id = $1`
+	var count int
+	row := s.DB.QueryRowContext(ctx, q, userID)
+	err = row.Scan(&count)
+
+	if err != nil {
+		log.Println(err)
+		if err == sql.ErrNoRows {
+			genericUploadImageResponse("user-not-found")
+		}
+		genericUploadImageResponse(err.Error())
+	}
 
 	imageData := bytes.Buffer{}
 	imageSize := 0
@@ -295,7 +312,15 @@ func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
 		return err
 	}
 
-	log.Printf("saved image with id: %s, size: %d", imageID, imageSize)
+	// Update user photo
+	fileName := fmt.Sprintf("%s%s", imageID, imageType)
+	q = `UPDATE users SET photo = $2 WHERE id = $1`
+	_, err = s.DB.ExecContext(ctx, q, userID, fileName)
+	if err != nil {
+		log.Println(err)
+		return genericUploadImageResponse(err.Error())
+	}
 
+	log.Printf("saved image with id: %s, size: %d", imageID, imageSize)
 	return nil
 }

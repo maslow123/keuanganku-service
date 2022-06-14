@@ -58,5 +58,6 @@ func (store *DiskImageStore) Save(userID int32, imageType string, imageData byte
 		Path:   imagePath,
 	}
 
+	// fileName := fmt.Sprintf("%s.%s", imageID.String(), imageType)
 	return imageID.String(), nil
 }

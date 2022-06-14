@@ -1,2 +1,4 @@
 cover.out
 *.pb.go
+img/*
+pkg/tmp/*
