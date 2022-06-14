@@ -50,6 +50,7 @@ func main() {
 		Jwt:            jwt,
 		BalanceService: balanceService,
 		ImageStore:     imageStore,
+		IsTesting:      false,
 	}
 
 	server := grpc.NewServer(opts...)

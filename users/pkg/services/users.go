@@ -10,6 +10,9 @@ import (
 	"net/http"
 	"time"
 
+	cloudinary "github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
+	"github.com/maslow123/users/pkg/config"
 	"github.com/maslow123/users/pkg/pb"
 	"github.com/maslow123/users/pkg/utils"
 )
@@ -102,7 +105,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 	var user pb.User
 	var userPass string
 	q := `
-		SELECT id, name, email, password
+		SELECT id, name, email, password, photo
 		FROM users
 		WHERE email = $1
 		LIMIT 1
@@ -114,6 +117,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 		&user.Name,
 		&user.Email,
 		&userPass,
+		&user.Photo,
 	)
 
 	if err != nil {
@@ -248,7 +252,6 @@ func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
 	log.Printf("receive an upload-image request for user %d with image type %s", userID, imageType)
 
 	// check user id image already exists or no
-
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -301,17 +304,6 @@ func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
 		log.Println("Cannot save image to the store: ", err)
 	}
 
-	res := &pb.UploadImageResponse{
-		Id:   imageID,
-		Size: uint32(imageSize),
-	}
-
-	err = stream.SendAndClose(res)
-	if err != nil {
-		log.Println("Cannot send response")
-		return err
-	}
-
 	// Update user photo
 	fileName := fmt.Sprintf("%s%s", imageID, imageType)
 	q = `UPDATE users SET photo = $2 WHERE id = $1`
@@ -321,6 +313,44 @@ func (s *Server) UploadImage(stream pb.UserService_UploadImageServer) error {
 		return genericUploadImageResponse(err.Error())
 	}
 
+	// add to cloudinary
+	if !s.IsTesting {
+		c, err := config.LoadConfig("./pkg/config/envs", "dev")
+		if err != nil {
+			log.Println(err)
+			return genericUploadImageResponse(err.Error())
+		}
+
+		cld, err := cloudinary.NewFromParams(c.CloudinaryCloudName, c.CloudinaryApiKey, c.CloudinaryApiSecretKey)
+		if err != nil {
+			log.Println(err)
+			return genericUploadImageResponse(err.Error())
+		}
+		imagePath := fmt.Sprintf("%s/%s%s", "img/", imageID, imageType)
+		resp, err := cld.Upload.Upload(ctx, imagePath, uploader.UploadParams{
+			PublicID: fmt.Sprintf("keuanganku/users/%s", imageID),
+		})
+		if err != nil {
+			log.Println(err)
+			return genericUploadImageResponse(err.Error())
+		}
+
+		log.Println("Cloudinary URL image: ", resp.SecureURL)
+	}
+
+	res := &pb.UploadImageResponse{
+		Id:   imageID,
+		Size: uint32(imageSize),
+		Type: imageType,
+	}
+
+	err = stream.SendAndClose(res)
+	if err != nil {
+		log.Println("Cannot send response")
+		return err
+	}
+
 	log.Printf("saved image with id: %s, size: %d", imageID, imageSize)
+	log.Println("Response: ", res)
 	return nil
 }

@@ -42,6 +42,7 @@ func dialer(t *testing.T) func(context.Context, string) (net.Conn, error) {
 		Jwt:            jwt,
 		BalanceService: balanceService,
 		ImageStore:     imageStore,
+		IsTesting:      true,
 	}
 
 	server := grpc.NewServer()

@@ -12,6 +12,7 @@ type Server struct {
 	DB             *sql.DB
 	BalanceService client.BalanceServiceClient
 	ImageStore     ImageStore
+	IsTesting      bool
 }
 
 // func NewUserServer(userStore UserStore, imageStore ImageStore) *Server {
