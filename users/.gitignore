@@ -1,4 +1,4 @@
-*.env
+.env
 cover.out
 *.pb.go
 img/*
