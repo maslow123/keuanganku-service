@@ -23,6 +23,8 @@ func RegisterRoutes(r *gin.Engine, c *config.Config, userSvc *users.ServiceClien
 	routes.GET("/detail/:id", svc.DetailUserTransaction)
 	routes.DELETE("/:id", svc.DeleteTransactionByUser)
 
+	routes.GET("/expenditure", svc.GetPercentageExpenditure)
+
 	return svc
 }
 
@@ -40,4 +42,8 @@ func (svc *ServiceClient) DetailUserTransaction(ctx *gin.Context) {
 
 func (svc *ServiceClient) DeleteTransactionByUser(ctx *gin.Context) {
 	routes.DeleteTransactionByUser(ctx, svc.Client)
+}
+
+func (svc *ServiceClient) GetPercentageExpenditure(ctx *gin.Context) {
+	routes.GetPercentageExpenditure(ctx, svc.Client)
 }

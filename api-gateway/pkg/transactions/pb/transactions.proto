@@ -74,9 +74,26 @@ message DetailTransactionResponse {
   Transaction transaction = 3;
 }
 
+
+message GetPercentageExpenditureRequest {
+  int32 user_id = 1 [(gogoproto.jsontag) = "user_id"];
+  string start_date = 2 [(gogoproto.jsontag) = "start_date"];
+  string end_date = 3 [(gogoproto.jsontag) = "end_date"];
+}
+
+message GetPercentageExpenditureResponse {
+  int32 status = 1;
+  string error = 2;
+  float today_expenses = 3 [(gogoproto.jsontag) = "today_expenses"];
+  float other_day_expenses = 4 [(gogoproto.jsontag) = "other_day_expenses"];
+  float percentage = 5;
+}
+
 service TransactionService {
   rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse) {}
   rpc GetTransactionByUser(GetTransactionListRequest) returns (GetTransactionListResponse) {}
   rpc DeleteTransactionByUser(DeleteTransactionRequest) returns (DeleteTransactionResponse) {}
   rpc DetailTransaction(DetailTransactionRequest) returns (DetailTransactionResponse) {}
+  
+  rpc GetPercentageExpenditure(GetPercentageExpenditureRequest) returns (GetPercentageExpenditureResponse) {}
 }

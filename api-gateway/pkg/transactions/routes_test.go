@@ -130,7 +130,7 @@ func TestDetailUserTransaction(t *testing.T) {
 		{
 			name: "OK",
 			getTransactionId: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
-				return createRandomTransaction(t, server, authorizationHeader)
+				return createRandomTransaction(t, server, authorizationHeader, int32(time.Now().Unix()), 10000)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
@@ -188,7 +188,7 @@ func TestDeleteTransaction(t *testing.T) {
 		{
 			name: "OK",
 			getTransactionId: func(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
-				return createRandomTransaction(t, server, authorizationHeader)
+				return createRandomTransaction(t, server, authorizationHeader, int32(time.Now().Unix()), 10000)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
@@ -220,15 +220,157 @@ func TestDeleteTransaction(t *testing.T) {
 	}
 }
 
-func createRandomTransaction(t *testing.T, server *ServiceClient, authorizationHeader string) int32 {
+func TestGetPercentageExpenditure(t *testing.T) {
+	testCases := []struct {
+		name          string
+		query         string
+		checkResponse func(recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name:  "OK",
+			query: "start_date=2022-01-02&end_date=2022-01-01",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				data, err := ioutil.ReadAll(recorder.Body)
+				require.NoError(t, err)
+
+				var response pb.GetPercentageExpenditureResponse
+				err = json.Unmarshal(data, &response)
+				require.NoError(t, err)
+
+				require.Equal(t, float32(90), response.Percentage)
+			},
+		},
+		{
+			name:  "Empty Start Date",
+			query: "start_date=&end_date=2022-01-01",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+				data, err := ioutil.ReadAll(recorder.Body)
+				require.NoError(t, err)
+
+				var response pb.GetPercentageExpenditureResponse
+				err = json.Unmarshal(data, &response)
+				require.NoError(t, err)
+
+				require.Equal(t, "invalid-start-date", response.Error)
+			},
+		},
+		{
+			name:  "Empty End Date",
+			query: "start_date=2022-01-02&end_date=",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+				data, err := ioutil.ReadAll(recorder.Body)
+				require.NoError(t, err)
+
+				var response pb.GetPercentageExpenditureResponse
+				err = json.Unmarshal(data, &response)
+				require.NoError(t, err)
+
+				require.Equal(t, "invalid-end-date", response.Error)
+			},
+		},
+		{
+			name:  "Invalid Start Date",
+			query: "start_date=invalid&end_date=2022-01-01",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+				data, err := ioutil.ReadAll(recorder.Body)
+				require.NoError(t, err)
+
+				var response pb.GetPercentageExpenditureResponse
+				err = json.Unmarshal(data, &response)
+				require.NoError(t, err)
+
+				require.Equal(t, "invalid-start-date", response.Error)
+			},
+		},
+		{
+			name:  "Invalid End Date",
+			query: "start_date=2022-01-02&end_date=invalid",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+				data, err := ioutil.ReadAll(recorder.Body)
+				require.NoError(t, err)
+
+				var response pb.GetPercentageExpenditureResponse
+				err = json.Unmarshal(data, &response)
+				require.NoError(t, err)
+
+				require.Equal(t, "invalid-end-date", response.Error)
+			},
+		},
+		{
+			name:  "Transaction Not Found",
+			query: "start_date=2022-03-03&end_date=2022-03-03",
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusNotFound, recorder.Code)
+				data, err := ioutil.ReadAll(recorder.Body)
+				require.NoError(t, err)
+
+				var response pb.GetPercentageExpenditureResponse
+				err = json.Unmarshal(data, &response)
+				require.NoError(t, err)
+
+				require.Equal(t, "transaction-not-found", response.Error)
+			},
+		},
+	}
+
+	// set authorizationHeader
+	server := NewServer(t)
+	authorizationHeader := addAuthorization(t, server)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			server = NewServer(t)
+			recorder := httptest.NewRecorder()
+			var transactionsId []int32
+			// create dummy transaction
+			if tc.name == "OK" {
+				dates := []string{"2022-01-02", "2022-01-01"}
+				totals := []int32{10000, 100000}
+				for i, date := range dates {
+					unixDate, err := time.Parse("2006-01-02", date)
+					require.NoError(t, err)
+
+					transactionId := createRandomTransaction(t, server, authorizationHeader, int32(unixDate.Unix()), totals[i])
+					transactionsId = append(transactionsId, transactionId)
+				}
+			}
+
+			url := fmt.Sprintf("/transactions/expenditure?%s", tc.query)
+			request, err := http.NewRequest(http.MethodGet, url, nil)
+			require.NoError(t, err)
+
+			request.Header.Set("Authorization", authorizationHeader)
+			server.Router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+
+			// delete transaction
+			if len(transactionsId) > 0 {
+				for _, txID := range transactionsId {
+					err := deleteTransction(t, server, authorizationHeader, txID)
+					require.NoError(t, err)
+				}
+			}
+		})
+	}
+}
+
+func createRandomTransaction(t *testing.T, server *ServiceClient, authorizationHeader string, createdAt, total int32) int32 {
 	recorder := httptest.NewRecorder()
 
 	body := gin.H{
 		"pos_id":      1,
-		"total":       10000,
+		"total":       total,
 		"details":     "Beli cireng",
-		"action_type": 0,
-		"type":        1,
+		"action_type": 1,
+		"type":        0,
+		"date":        createdAt,
 	}
 
 	data, err := json.Marshal(body)
@@ -252,4 +394,23 @@ func createRandomTransaction(t *testing.T, server *ServiceClient, authorizationH
 	require.NoError(t, err)
 
 	return tx.Id
+}
+
+func deleteTransction(t *testing.T, server *ServiceClient, authorizationHeader string, transactionId int32) error {
+	recorder := httptest.NewRecorder()
+	url := fmt.Sprintf("/transactions/%d", transactionId)
+	request, err := http.NewRequest(http.MethodDelete, url, nil)
+	require.NoError(t, err)
+
+	request.Header.Set("Authorization", authorizationHeader)
+	server.Router.ServeHTTP(recorder, request)
+
+	data, err := ioutil.ReadAll(recorder.Body)
+	require.NoError(t, err)
+
+	log.Println("==== DATA ====", string(data))
+
+	var tx pb.DeleteTransactionResponse
+	err = json.Unmarshal(data, &tx)
+	return err
 }
