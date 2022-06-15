@@ -8,12 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	// "path/filepath"
-
 	"github.com/gin-gonic/gin"
-	// "github.com/google/uuid"
-
-	// "github.com/maslow123/api-gateway/pkg/users/pb"
 	"github.com/maslow123/api-gateway/pkg/users/pb"
 	"github.com/maslow123/api-gateway/pkg/utils"
 )

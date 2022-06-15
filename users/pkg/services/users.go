@@ -105,7 +105,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 	var user pb.User
 	var userPass string
 	q := `
-		SELECT id, name, email, password, photo
+		SELECT id, name, email, password, COALESCE(photo, '') photo
 		FROM users
 		WHERE email = $1
 		LIMIT 1

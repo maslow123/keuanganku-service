@@ -31,5 +31,5 @@ func Login(ctx *gin.Context, c pb.UserServiceClient) {
 		return
 	}
 
-	ctx.JSON(int(res.Status), &res)
+	utils.SendProtoMessage(ctx, res, int(res.Status))
 }
