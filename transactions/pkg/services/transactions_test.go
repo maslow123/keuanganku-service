@@ -180,7 +180,6 @@ func TestCreateTransaction(t *testing.T) {
 		})
 	}
 }
-
 func TestGetTransactionList(t *testing.T) {
 	testCases := []struct {
 		name string
@@ -300,7 +299,6 @@ func TestGetTransactionList(t *testing.T) {
 		})
 	}
 }
-
 func TestDetailTransaction(t *testing.T) {
 	testCases := []struct {
 		name             string
@@ -470,6 +468,163 @@ func TestDeleteTransaction(t *testing.T) {
 
 			require.Equal(t, tc.resp.Status, response.Status)
 			require.Equal(t, tc.resp.Error, response.Error)
+		})
+	}
+}
+func TestGetPercentageExpenditure(t *testing.T) {
+	testCases := []struct {
+		name string
+		req  *pb.GetPercentageExpenditureRequest
+		resp *pb.GetPercentageExpenditureResponse
+	}{
+		{
+			"OK",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    1,
+				StartDate: time.Now().AddDate(0, 0, 2).Format("2006-01-02"), // add 2 day from now
+				EndDate:   time.Now().AddDate(0, 0, 1).Format("2006-01-02"), // add 1 day from now,
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusOK),
+				Error:      "",
+				Percentage: 90,
+			},
+		},
+		{
+			"Invalid User ID",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    0,
+				StartDate: time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+				EndDate:   time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusBadRequest),
+				Error:      "invalid-user-id",
+				Percentage: 0,
+			},
+		},
+		{
+			"Empty Start Date",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    1,
+				StartDate: "",
+				EndDate:   time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusBadRequest),
+				Error:      "invalid-start-date",
+				Percentage: 0,
+			},
+		},
+		{
+			"Empty End Date",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    1,
+				StartDate: time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+				EndDate:   "",
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusBadRequest),
+				Error:      "invalid-end-date",
+				Percentage: 0,
+			},
+		},
+		{
+			"Invalid Start Date",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    1,
+				StartDate: "invalid start date",
+				EndDate:   time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusBadRequest),
+				Error:      "invalid-start-date",
+				Percentage: 0,
+			},
+		},
+		{
+			"Invalid End Date",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    1,
+				StartDate: time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+				EndDate:   "invalid end date",
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusBadRequest),
+				Error:      "invalid-end-date",
+				Percentage: 0,
+			},
+		},
+		{
+			"Transaction not found",
+			&pb.GetPercentageExpenditureRequest{
+				UserId:    1,
+				StartDate: time.Now().AddDate(0, 0, 2).Format("2006-01-03"), // add 3 day from now
+				EndDate:   time.Now().AddDate(0, 0, 1).Format("2006-01-02"), // add 3 day from now,
+			},
+			&pb.GetPercentageExpenditureResponse{
+				Status:     int32(http.StatusNotFound),
+				Error:      "transaction-not-found",
+				Percentage: 0,
+			},
+		},
+	}
+
+	ctx := context.Background()
+	conn := checkConnection(ctx, t)
+	defer conn.Close()
+
+	client := pb.NewTransactionServiceClient(conn)
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			var transactionsId []int32
+			if tc.resp.Status == int32(http.StatusOK) {
+
+				// create transactions
+				dates := []string{tc.req.StartDate, tc.req.EndDate}
+				totals := []int32{10000, 100000}
+				for i, date := range dates {
+					unixDate, err := time.Parse("2006-01-02", date)
+					require.NoError(t, err)
+
+					reqCreateTx := &pb.CreateTransactionRequest{
+						UserId:     1,
+						PosId:      1,
+						Total:      totals[i],
+						Details:    "TESTING",
+						ActionType: 1,
+						Type:       0,
+						Date:       int32(unixDate.Unix()),
+					}
+
+					resp, err := client.CreateTransaction(ctx, reqCreateTx)
+					require.NoError(t, err)
+					transactionsId = append(transactionsId, resp.Id)
+				}
+			}
+			response, err := client.GetPercentageExpenditure(ctx, tc.req)
+			require.NoError(t, err)
+
+			require.Equal(t, tc.resp.Status, response.Status)
+			require.Equal(t, tc.resp.Error, response.Error)
+
+			if tc.resp.Status == int32(http.StatusOK) {
+				require.Equal(t, tc.resp.Percentage, response.Percentage)
+
+				// delete transactions
+				for _, txID := range transactionsId {
+					req := &pb.DeleteTransactionRequest{
+						UserId: 1,
+						Id:     txID,
+					}
+
+					_, err := client.DeleteTransactionByUser(ctx, req)
+					require.NoError(t, err)
+				}
+			}
 		})
 	}
 }

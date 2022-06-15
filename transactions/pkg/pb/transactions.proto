@@ -74,9 +74,25 @@ message DetailTransactionResponse {
   Transaction transaction = 3;
 }
 
+message GetPercentageExpenditureRequest {
+  int32 user_id = 1;
+  string start_date = 2;
+  string end_date = 3;
+}
+
+message GetPercentageExpenditureResponse {
+  int32 status = 1;
+  string error = 2;
+  float today_expenses = 3;
+  float other_day_expenses = 4;
+  float percentage = 5;
+}
+
 service TransactionService {
   rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse) {}
   rpc GetTransactionByUser(GetTransactionListRequest) returns (GetTransactionListResponse) {}
   rpc DeleteTransactionByUser(DeleteTransactionRequest) returns (DeleteTransactionResponse) {}
   rpc DetailTransaction(DetailTransactionRequest) returns (DetailTransactionResponse) {}
+  
+  rpc GetPercentageExpenditure(GetPercentageExpenditureRequest) returns (GetPercentageExpenditureResponse) {}
 }

@@ -29,3 +29,10 @@ func genericDeleteTransactionResponse(statusCode int, errorMessage string) (*pb.
 		Error:  errorMessage,
 	}, nil
 }
+
+func genericGetPercentageExpenditureResponse(statusCode int, errorMessage string) (*pb.GetPercentageExpenditureResponse, error) {
+	return &pb.GetPercentageExpenditureResponse{
+		Status: int32(statusCode),
+		Error:  errorMessage,
+	}, nil
+}

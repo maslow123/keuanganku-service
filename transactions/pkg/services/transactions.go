@@ -54,8 +54,15 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	if currentDate == selectedDate {
 		dt = time.Unix(int64(req.Date), 0).Local().UTC()
 	}
+	// Start transaction
+	tx, err := s.DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Println(err)
+		return genericCreateTransactionResponse(http.StatusInternalServerError, err.Error())
+	}
+	defer tx.Rollback()
 
-	row := s.DB.QueryRowContext(ctx, q,
+	row := tx.QueryRowContext(ctx, q,
 		&req.UserId,
 		&req.PosId,
 		&req.Total,
@@ -87,6 +94,11 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 		return genericCreateTransactionResponse(int(updateBalance.Status), updateBalance.Error)
 	}
 	log.Printf("===== Balance %d currently has Rp.%d =====", updateBalance.Id, updateBalance.CurrentBalance)
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		return genericCreateTransactionResponse(http.StatusInternalServerError, err.Error())
+	}
 
 	resp := &pb.CreateTransactionResponse{
 		Status: http.StatusCreated,
@@ -304,5 +316,67 @@ func (s *Server) DeleteTransactionByUser(ctx context.Context, req *pb.DeleteTran
 		Status: http.StatusOK,
 		Error:  "",
 	}
+	return resp, nil
+}
+
+func (s *Server) GetPercentageExpenditure(ctx context.Context, req *pb.GetPercentageExpenditureRequest) (*pb.GetPercentageExpenditureResponse, error) {
+	d := "2006-01-02"
+	if req.UserId == 0 {
+		return genericGetPercentageExpenditureResponse(http.StatusBadRequest, "invalid-user-id")
+	}
+
+	_, err := time.Parse(d, req.StartDate)
+	if req.StartDate == "" || err != nil {
+		return genericGetPercentageExpenditureResponse(http.StatusBadRequest, "invalid-start-date")
+	}
+
+	_, err = time.Parse(d, req.EndDate)
+	if req.EndDate == "" || err != nil {
+		return genericGetPercentageExpenditureResponse(http.StatusBadRequest, "invalid-end-date")
+	}
+
+	// Formula: ((yesterday_expenses - today_expenses) / yesterday_expenses) * 100
+	q := `
+		SELECT 
+			today_expenditure, other_expenditure, 
+			( CAST( (other_expenditure - today_expenditure) AS DECIMAL) / other_expenditure ) * 100 percentage
+		FROM 
+			(
+				(
+					SELECT SUM(total) AS today_expenditure, action
+					FROM transactions
+					WHERE action = 1 AND user_id = $1 AND created_at::date = $2
+					GROUP BY action
+				) te 
+				JOIN (
+						SELECT SUM(total) AS other_expenditure, action
+						FROM transactions			
+						WHERE action = 1 and user_id = $1 AND created_at::date = $3
+						GROUP BY action
+				) oe ON te.action = oe.action
+			)
+		GROUP BY today_expenditure, other_expenditure
+	`
+
+	row := s.DB.QueryRowContext(ctx, q, req.UserId, req.StartDate, req.EndDate)
+	var todayExpenses, otherDayExpenses, percentage float32
+
+	err = row.Scan(&todayExpenses, &otherDayExpenses, &percentage)
+	if err != nil {
+		log.Println(err)
+		if err == sql.ErrNoRows {
+			return genericGetPercentageExpenditureResponse(http.StatusNotFound, "transaction-not-found")
+		}
+		return genericGetPercentageExpenditureResponse(http.StatusInternalServerError, err.Error())
+	}
+
+	resp := &pb.GetPercentageExpenditureResponse{
+		Status:           http.StatusOK,
+		Error:            "",
+		TodayExpenses:    todayExpenses,
+		OtherDayExpenses: otherDayExpenses,
+		Percentage:       percentage,
+	}
+
 	return resp, nil
 }
