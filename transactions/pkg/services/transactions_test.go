@@ -202,6 +202,21 @@ func TestGetTransactionList(t *testing.T) {
 			},
 		},
 		{
+			"OK with no actions",
+			&pb.GetTransactionListRequest{
+				UserId:    1,
+				Page:      1,
+				Limit:     5,
+				Action:    2,
+				StartDate: int32(time.Now().Unix()),
+				EndDate:   int32(time.Now().Unix()),
+			},
+			&pb.GetTransactionListResponse{
+				Status: int32(http.StatusOK),
+				Error:  "",
+			},
+		},
+		{
 			"Invalid UserID",
 			&pb.GetTransactionListRequest{
 				UserId:    0,

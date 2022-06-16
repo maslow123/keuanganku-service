@@ -118,10 +118,13 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	if req.Limit == 0 {
 		return genericGetTransactionListByUserResponse(http.StatusBadRequest, "invalid-limit")
 	}
-	if req.Action != 0 && req.Action != 1 {
+	if req.Action != 0 && req.Action != 1 && req.Action != 2 {
 		return genericGetTransactionListByUserResponse(http.StatusBadRequest, "invalid-type")
 	}
 
+	params := 1
+	args := make([]interface{}, 0)
+	args = append(args, req.UserId)
 	q := `
 		SELECT 
 			t.id, t.total, t.details, t.type, t.created_at,
@@ -129,8 +132,14 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 		FROM transactions t
 		LEFT JOIN pos p ON p.id = t.pos_id
 		LEFT JOIN users u ON u.id = t.user_id
-		WHERE u.id = $1 AND t.action = $2		
+		WHERE u.id = $1		
 	`
+	if req.Action != 2 {
+		params++
+		q = fmt.Sprintf("%s AND t.action = $%d", q, params)
+		args = append(args, req.Action)
+	}
+
 	var startDate, endDate string
 	if req.StartDate != 0 && req.EndDate != 0 {
 		startDate = time.Unix(int64(req.StartDate), 0).Format("2006-01-02")
@@ -143,11 +152,12 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 	q = fmt.Sprintf("%s AND t.created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'", q, startDate, endDate)
 
 	q = fmt.Sprintf(
-		"%s ORDER BY t.created_at DESC, t.details ASC LIMIT $3 OFFSET $4", q,
+		"%s ORDER BY t.created_at DESC, t.details ASC LIMIT $%d OFFSET $%d", q, params+1, params+2,
 	)
 
 	offset := (req.Page - 1) * req.Limit
-	rows, err := s.DB.QueryContext(ctx, q, req.UserId, req.Action, req.Limit, offset)
+	args = append(args, req.Limit, offset)
+	rows, err := s.DB.QueryContext(ctx, q, args...)
 	if err != nil {
 		log.Println(err)
 		return genericGetTransactionListByUserResponse(http.StatusInternalServerError, err.Error())
