@@ -33,6 +33,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root
 COPY .env ./
 COPY pkg pkg/
+COPY img img/
 
 # Copy the Pre-built binary file from the previous stage. Observe we also copied the .env file
 COPY --from=builder /app/cmd/main .

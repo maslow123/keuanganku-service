@@ -39,7 +39,7 @@ COPY --from=builder /app/cmd/main .
 COPY --from=builder /app/.env .      
 
 # Expose port 50051 to the outside world
-EXPOSE 50051
+EXPOSE 50053
 
 #Command to run the executable
 CMD ["./main"]

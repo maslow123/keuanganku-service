@@ -1,7 +1,7 @@
 version: '3'
 services:
   api:
-    image: maslow123/products:latest
+    image: maslow123/keuanganku-pos:latest
     container_name: api
     build:
       context: .

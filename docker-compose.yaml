@@ -17,6 +17,57 @@ services:
     restart: on-failure    
     networks:
       - keuanganku
+  posapi:
+    image: maslow123/keuanganku-pos:latest
+    container_name: posapi
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+    ports:
+      - 50052:50052
+    restart: on-failure    
+    networks:
+      - keuanganku
+  transactionapi:
+    image: maslow123/keuanganku-transactions:latest
+    container_name: transactionapi
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+    ports:
+      - 50053:50053
+    restart: on-failure    
+    networks:
+      - keuanganku
+  balanceapi:
+    image: maslow123/keuanganku-balance:latest
+    container_name: balanceapi
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+    ports:
+      - 50054:50054
+    restart: on-failure    
+    networks:
+      - keuanganku
   testdb:
     image: postgres:latest
     container_name: testdb
