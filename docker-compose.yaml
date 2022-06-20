@@ -78,7 +78,7 @@ services:
       PGPASSWORD: ${DB_PASS}
       PGDATA: /data
     ports:
-      - '${DB_PORT}:${DB_PORT}'
+      - '5433:5432'
     volumes:
       - database_postgres:/var/lib/postgresql/data
     networks:

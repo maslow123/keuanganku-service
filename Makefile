@@ -19,6 +19,13 @@ runapi: infratest
 	docker-compose up -d --force-recreate balanceapi
 	docker-compose up -d --force-recreate api-gateway
 
+test: runapi
+	cd users && go test -v ./... -coverprofile cover.out
+	cd pos && go test -v ./... -coverprofile cover.out
+	cd transactions && go test -v ./... -coverprofile cover.out
+	cd balance && go test -v ./... -coverprofile cover.out
+	cd api-gateway && go test -v ./... -coverprofile cover.out
+
 resetdb:
 	docker-compose down
 	make infratest
