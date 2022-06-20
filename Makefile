@@ -25,6 +25,8 @@ test: runapi
 	cd transactions && go test -v ./... -coverprofile cover.out
 	cd balance && go test -v ./... -coverprofile cover.out
 	cd api-gateway && go test -v ./... -coverprofile cover.out
+	
+	docker-compose down
 
 resetdb:
 	docker-compose down
