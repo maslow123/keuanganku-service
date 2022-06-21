@@ -1,0 +1,956 @@
+{
+	"info": {
+		"_postman_id": "6544b11e-a27e-4a6e-902d-71ac369a8928",
+		"name": "Keuanganku",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7847627"
+	},
+	"item": [
+		{
+			"name": "keuanganku",
+			"item": [
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"user 3\",\r\n    \"email\": \"user3@gmail.com\",\r\n    \"password\": \"111111\",\r\n    \"confirm_password\": \"111111\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/users/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"user1@gmail.com\",\r\n    \"password\": \"111111\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/users/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTQ3NTg4OTQsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjJ9.stcmmV6GrIk6l62syuXzv9_UaDlzUIfQrSG0kcekcIU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"user2@gmail.com\",\r\n    \"name\": \"Omama Olala edited\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/users/update",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTU3OTQzMjEsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.ex3x20uu4dYU5z2FUP8lOE1htJ_Szsm8e-tKnTxUf68",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/Administrator/Pictures/Saved Pictures/omama.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8000/users/upload",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"upload"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "pos",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE0NTUxMDUsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJFbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.FER0cOC46cv4fgR0WNjPf3c-qtaVwnfC0Puz_dweZ7g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/pos/create",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"pos",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "list",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"user-agent": true,
+									"accept": true,
+									"accept-encoding": true,
+									"connection": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTU3OTQzMjEsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.ex3x20uu4dYU5z2FUP8lOE1htJ_Szsm8e-tKnTxUf68",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/pos/list?page=1&limit=10&type=0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"pos",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "type",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE0NTUxMDUsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJFbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.FER0cOC46cv4fgR0WNjPf3c-qtaVwnfC0Puz_dweZ7g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/pos/6",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"pos",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE0NTUxMDUsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJFbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.FER0cOC46cv4fgR0WNjPf3c-qtaVwnfC0Puz_dweZ7g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Edited name\",\r\n    \"color\": \"#D0D0D0\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/pos/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"pos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "transactions",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pos_id\": 1,\r\n    \"total\": 5000,\r\n    \"details\": \"Beli gorengan\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/transactions/create",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"transactions",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "list",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjg5NjAsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.BcCx2z-o10LHziIChwXqoYfIUNOUsiNxseeyzAFfEvw",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/transactions/list?page=1&limit=10&action=0&start_date=0&end_date=0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"transactions",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "action",
+											"value": "0"
+										},
+										{
+											"key": "start_date",
+											"value": "0"
+										},
+										{
+											"key": "end_date",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "detail",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjg5NjAsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.BcCx2z-o10LHziIChwXqoYfIUNOUsiNxseeyzAFfEvw",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/transactions/detail/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"transactions",
+										"detail",
+										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "balance",
+					"item": [
+						{
+							"name": "get user balance",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjg5NjAsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.BcCx2z-o10LHziIChwXqoYfIUNOUsiNxseeyzAFfEvw",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/balance/user",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"balance",
+										"user"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "keuanganku Copy",
+					"item": [
+						{
+							"name": "users",
+							"item": [
+								{
+									"name": "register",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"user 3\",\r\n    \"email\": \"user3@gmail.com\",\r\n    \"password\": \"111111\",\r\n    \"confirm_password\": \"111111\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"user1@gmail.com\",\r\n    \"password\": \"111111\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTQ3NTg4OTQsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjJ9.stcmmV6GrIk6l62syuXzv9_UaDlzUIfQrSG0kcekcIU",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"user2@gmail.com\",\r\n    \"name\": \"Omama Olala edited\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/update",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"update"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "upload photo",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTU3OTQzMjEsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.ex3x20uu4dYU5z2FUP8lOE1htJ_Szsm8e-tKnTxUf68",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "/C:/Users/Administrator/Pictures/Saved Pictures/omama.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/upload",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"upload"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "pos",
+							"item": [
+								{
+									"name": "create",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE0NTUxMDUsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJFbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.FER0cOC46cv4fgR0WNjPf3c-qtaVwnfC0Puz_dweZ7g",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/pos/create",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"pos",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list",
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"user-agent": true,
+											"accept": true,
+											"accept-encoding": true,
+											"connection": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTU3OTQzMjEsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.ex3x20uu4dYU5z2FUP8lOE1htJ_Szsm8e-tKnTxUf68",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8000/pos/list?page=1&limit=10&type=0",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"pos",
+												"list"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "type",
+													"value": "0"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE0NTUxMDUsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJFbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.FER0cOC46cv4fgR0WNjPf3c-qtaVwnfC0Puz_dweZ7g",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/pos/6",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"pos",
+												"6"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE0NTUxMDUsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJFbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.FER0cOC46cv4fgR0WNjPf3c-qtaVwnfC0Puz_dweZ7g",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"Edited name\",\r\n    \"color\": \"#D0D0D0\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/pos/1",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"pos",
+												"1"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "transactions",
+							"item": [
+								{
+									"name": "create",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"pos_id\": 1,\r\n    \"total\": 5000,\r\n    \"details\": \"Beli gorengan\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/transactions/create",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"transactions",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjg5NjAsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.BcCx2z-o10LHziIChwXqoYfIUNOUsiNxseeyzAFfEvw",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8000/transactions/list?page=1&limit=10&action=0&start_date=0&end_date=0",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"transactions",
+												"list"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "action",
+													"value": "0"
+												},
+												{
+													"key": "start_date",
+													"value": "0"
+												},
+												{
+													"key": "end_date",
+													"value": "0"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "detail",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjg5NjAsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.BcCx2z-o10LHziIChwXqoYfIUNOUsiNxseeyzAFfEvw",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8000/transactions/detail/3",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"transactions",
+												"detail",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "balance",
+							"item": [
+								{
+									"name": "get user balance",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjg5NjAsImlzcyI6InVzZXItc2VydmljZSIsIklkIjowLCJVc2VySWQiOjF9.BcCx2z-o10LHziIChwXqoYfIUNOUsiNxseeyzAFfEvw",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8000/balance/user",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"balance",
+												"user"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
