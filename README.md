@@ -31,6 +31,6 @@
     ```make test```
 - Finish.
 ## Shut down all services
-- Make sure you're on root folder (wpg-testcase), and enter the command
+- Make sure you're on root folder (keuanganku-service), and enter the command
 ```$ docker-compose down```
 - Finish.
