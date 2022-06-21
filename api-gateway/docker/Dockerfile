@@ -38,8 +38,8 @@ COPY pkg pkg/
 COPY --from=builder /app/cmd/main .
 COPY --from=builder /app/.env .      
 
-# Expose port 3000 to the outside world
-EXPOSE 3000
+# Expose port 8000 to the outside world
+EXPOSE 8000
 
 #Command to run the executable
 CMD ["./main"]
