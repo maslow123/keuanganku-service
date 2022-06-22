@@ -50,7 +50,7 @@ func (s *Server) CreateTransaction(ctx context.Context, req *pb.CreateTransactio
 	currentDate := time.Now().Format("2006-01-02")
 	selectedDate := dt.Format("2006-01-02")
 
-	dt = time.Unix(int64(req.Date), 0)
+	dt = time.Unix(int64(req.Date), 0).Add(time.Hour * 7)
 	if currentDate == selectedDate {
 		dt = time.Unix(int64(req.Date), 0).Local().UTC()
 	}
@@ -142,14 +142,14 @@ func (s *Server) GetTransactionByUser(ctx context.Context, req *pb.GetTransactio
 
 	var startDate, endDate string
 	if req.StartDate != 0 && req.EndDate != 0 {
-		startDate = time.Unix(int64(req.StartDate), 0).Format("2006-01-02")
-		endDate = time.Unix(int64(req.EndDate), 0).Format("2006-01-02")
+		startDate = time.Unix(int64(req.StartDate), 0).Add(time.Hour * 7).Format("2006-01-02")
+		endDate = time.Unix(int64(req.EndDate), 0).Add(time.Hour * 7).Format("2006-01-02")
 	} else {
 		startDate = time.Now().Format("2006-01-02")
 		endDate = time.Now().Format("2006-01-02")
 	}
 
-	q = fmt.Sprintf("%s AND t.created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'", q, startDate, endDate)
+	q = fmt.Sprintf("%s AND t.created_at::date BETWEEN '%s' AND '%s'", q, startDate, endDate)
 
 	q = fmt.Sprintf(
 		"%s ORDER BY t.created_at DESC, t.details ASC LIMIT $%d OFFSET $%d", q, params+1, params+2,
