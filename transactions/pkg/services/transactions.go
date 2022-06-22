@@ -345,11 +345,9 @@ func (s *Server) GetPercentageExpenditure(ctx context.Context, req *pb.GetPercen
 		return genericGetPercentageExpenditureResponse(http.StatusBadRequest, "invalid-end-date")
 	}
 
-	// Formula: ((yesterday_expenses - today_expenses) / yesterday_expenses) * 100
 	q := `
 		SELECT 
-			today_expenditure, other_expenditure, 
-			( CAST( (other_expenditure - today_expenditure) AS DECIMAL) / other_expenditure ) * 100 percentage
+			today_expenditure, other_expenditure
 		FROM 
 			(
 				(
@@ -371,7 +369,7 @@ func (s *Server) GetPercentageExpenditure(ctx context.Context, req *pb.GetPercen
 	row := s.DB.QueryRowContext(ctx, q, req.UserId, req.StartDate, req.EndDate)
 	var todayExpenses, otherDayExpenses, percentage float32
 
-	err = row.Scan(&todayExpenses, &otherDayExpenses, &percentage)
+	err = row.Scan(&todayExpenses, &otherDayExpenses)
 	if err != nil {
 		log.Println(err)
 		if err == sql.ErrNoRows {
@@ -380,6 +378,10 @@ func (s *Server) GetPercentageExpenditure(ctx context.Context, req *pb.GetPercen
 		return genericGetPercentageExpenditureResponse(http.StatusInternalServerError, err.Error())
 	}
 
+	percentage = ((otherDayExpenses - todayExpenses) / todayExpenses) * 100
+	if otherDayExpenses > todayExpenses {
+		percentage = ((otherDayExpenses - todayExpenses) / otherDayExpenses) * 100
+	}
 	resp := &pb.GetPercentageExpenditureResponse{
 		Status:           http.StatusOK,
 		Error:            "",
